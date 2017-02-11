@@ -1,0 +1,21 @@
+/* Use CSS3 border-box for all elements */
+* {
+    box-sizing: border-box;
+}
+
+/* Allows usage of vertical height percentage */
+html, body, #root {
+    height: 100%;
+}
+
+/* Replace normalize.css default fonts and line-heights */
+html {
+    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height: 1.5;
+}
+
+body {
+    background: url(https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-334260.jpg);
+    background-size: cover;
+    cursor: default;
+}
