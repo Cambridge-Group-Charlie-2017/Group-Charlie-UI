@@ -11,7 +11,59 @@ if (typeof (window as any).URLSearchParams === 'undefined') {
 import 'normalize.css';
 import './index.css';
 
-ReactDOM.render(
-    <div>It works!</div>,
-    document.getElementById("root")
-);
+import { Navigation, NavigationListItem } from './components/navigation';
+
+let navigationPanel: NavigationListItem[] = [{
+    text: '',
+    icon: 'bars'
+}, {
+    text: 'New email',
+    icon: 'plus'
+}, {
+    text: 'Folders',
+    icon: 'folder-o',
+    collapsible: false,
+    noindent: true,
+    children: []
+}];
+
+let bottomNavigationItems: NavigationListItem[] = [{
+    text: 'Settings',
+    icon: 'cog'
+}];
+
+let selected: NavigationListItem = null;
+function render() {
+    ReactDOM.render(
+        <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={e => {
+            selected = e;
+            render();
+        }} />,
+        document.getElementById("root")
+    );
+}
+
+import { Store, Folder } from './services/api';
+
+function folderToListItem(f: Folder) {
+    let ret: NavigationListItem = {
+        text: <span>{f.name}{f.unread > 0 ? <span style={{ float: 'right' }}>{f.unread}</span> : null}</span>
+    };
+    if (f.subfolder.length) {
+        let subitems = f.subfolder.map(folderToListItem);
+        ret.children = subitems;
+    }
+    return ret;
+}
+
+async function main() {
+    let store = new Store();
+
+    let f: Folder[] = await store.getFolders();
+
+    navigationPanel[2].children = f.map(folderToListItem);
+    render();
+}
+
+render();
+main();
