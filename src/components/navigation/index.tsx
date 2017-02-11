@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Icon } from '../icon';
 
 export interface NavigationListItem {
-    text: string;
+    text: string | JSX.Element;
     icon?: string;
     children?: NavigationListItem[];
     collapsible?: boolean;
