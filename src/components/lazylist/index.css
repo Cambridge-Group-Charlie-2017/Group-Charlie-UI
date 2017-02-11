@@ -1,0 +1,9 @@
+.LazyList.panel {
+    overflow-y: auto;
+    background: #F8F8F8;
+}
+
+.LazyList.wrapper {
+    position: absolute;
+    width: 100%;
+}
