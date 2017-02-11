@@ -92,7 +92,7 @@ export class Folder {
         let url = `folders/${encodeURIComponent(this.path)}/messages`;
         let params = new URLSearchParams();
         params.set('start', start.toString());
-        params.set('end', end.toString());
+        params.set('end', (end - 1).toString());
         let json = await get(url, params);
 
         if (!(json instanceof Array)) {

@@ -9,14 +9,14 @@ export class Cache<T> {
   /**
    * Put messages into the message cache.
    * @param start start index of the messages, inclusive.
-   * @param end end index of the messages, inclusive.
+   * @param end end index of the messages, exclusive.
    * @param messages list of messages to cache.
    */
   put(start: number, end: number, messages: T[]): T {
     for (let i = 0; i < this.cache.length; i++) {
       let entry = this.cache[i];
       // If two entries neither collide nor touch, skip
-      if (entry.start > end + 1 || entry.end + 1 < start) {
+      if (entry.start > end || entry.end < start) {
         continue;
       }
       if (start <= entry.start) {
@@ -28,7 +28,7 @@ export class Cache<T> {
         } else {
           // Inserting entry preceeds existing entry
           // but there are messages in old entry that need to be merged with new ones
-          let messageMerged = messages.concat(entry.messages.slice(end + 1 - entry.start));
+          let messageMerged = messages.concat(entry.messages.slice(end - entry.start));
           this.cache.splice(i, 1);
           return this.put(start, entry.end, messageMerged);
         }
@@ -37,7 +37,7 @@ export class Cache<T> {
         if (entry.end >= end) {
           // Inserting entry is enclosed by the old entry
           // Update old entry will be sufficient
-          entry.messages = messageBefore.concat(messages, entry.messages.slice(end + 1 - entry.start));
+          entry.messages = messageBefore.concat(messages, entry.messages.slice(end - entry.start));
           return;
         } else {
           // Inserting entry is after existing entry
@@ -58,7 +58,7 @@ export class Cache<T> {
   mask(start: number, end: number): [number, number] {
     for (let entry of this.cache) {
       // If two entries neither collide nor touch, skip
-      if (entry.start > end + 1 || entry.end + 1 < start) {
+      if (entry.start > end || entry.end < start) {
         continue;
       }
       if (start < entry.start) {
@@ -66,14 +66,14 @@ export class Cache<T> {
           // We can only return an interval
           // So no-op
         } else {
-          end = entry.start - 1;
+          end = entry.start;
         }
       } else {
         if (entry.end >= end) {
           // Everything cached
           return [0, 0];
         } else {
-          start = entry.end + 1;
+          start = entry.end;
         }
       }
     }
@@ -83,12 +83,12 @@ export class Cache<T> {
   get(start: number, end: number) {
     for (let entry of this.cache) {
       // If two entries neither collide nor touch, skip
-      if (entry.start > end + 1 || entry.end + 1 < start) {
+      if (entry.start > end || entry.end < start) {
         continue;
       }
       // If encloses
       if (start >= entry.start && end <= entry.end) {
-        return entry.messages.slice(start - entry.start, end + 1 - entry.start);
+        return entry.messages.slice(start - entry.start, end - entry.start);
       }
       // Otherwise we know that the entry partially collides
       return null;
