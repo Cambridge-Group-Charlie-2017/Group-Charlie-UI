@@ -13,7 +13,8 @@
     "@types/react": "^15.0.8",
     "@types/react-dom": "^0.14.23",
     "react": "^15.4.2",
-    "react-dom": "^15.4.2"
+    "react-dom": "^15.4.2",
+    "url-search-params": "^0.6.1"
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.4-rc.0",
