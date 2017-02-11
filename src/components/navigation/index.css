@@ -1,0 +1,50 @@
+.Navigation.panel {
+    height: 100%;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    background: rgba(0, 0, 0 ,0.4);
+}
+
+.Navigation.item {
+    color: #FFF;
+
+    padding: .5rem 1rem;
+}
+
+.Navigation.subitem {
+    font-size: 0.9rem;
+}
+
+.Navigation.item:hover {
+    background: rgba(2, 99, 179, 0.8) !important;
+}
+
+.Navigation.icon {
+    display: inline-block;
+    width: 1.5rem;
+    padding-right: .5rem;
+    text-align: center;
+}
+
+.Navigation.hidden {
+    display: none;
+}
+
+.Navigation.collapse {
+    color: #CCC;
+}
+
+.Navigation.collapse:hover {
+    color: #FFF;
+}
+
+.Navigation.selected {
+    background: rgb(2, 99, 179);
+}
