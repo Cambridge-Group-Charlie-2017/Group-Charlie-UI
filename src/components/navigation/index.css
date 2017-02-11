@@ -10,6 +10,8 @@
     user-select: none;
 
     background: rgba(0, 0, 0 ,0.4);
+
+    position: relative;
 }
 
 .Navigation.item {
@@ -46,4 +48,10 @@
 
 .Navigation.selected {
     background: rgb(2, 99, 179);
+}
+
+.Navigation.bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }

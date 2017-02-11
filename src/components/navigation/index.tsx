@@ -14,6 +14,7 @@ export interface NavigationListItem {
 
 export interface NavigationProps {
     list: NavigationListItem[];
+    bottomList?: NavigationListItem[];
     selected?: NavigationListItem;
     expandByDefault?: boolean;
     onSelect?: (selected: NavigationListItem) => void;
@@ -115,7 +116,7 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
             });
 
             let subitems = <div key={`${path}/`} className={
-                collapsed ? 'Navigation hidden' : ''
+                collapsed ? 'Navigation hidden' : null
             }>{items}</div>
             return [comp, subitems];
         }
@@ -128,8 +129,16 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
         this.props.list.forEach((item, i) => {
             items.push(...this.buildTree(item, 0, 0, `${i}`));
         });
+
+        let bottomItems: JSX.Element[] = [];
+        if (this.props.bottomList) {
+            this.props.bottomList.forEach((item, i) => {
+                bottomItems.push(...this.buildTree(item, 0, 0, `b${i}`));
+            });
+        }
         return <div className="Navigation panel">
             <div>{items}</div>
+            {bottomItems.length ? <div className="Navigation bottom">{bottomItems}</div> : null}
         </div>;
     }
 }
