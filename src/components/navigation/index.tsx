@@ -12,7 +12,7 @@ export interface NavigationListItem {
     [others: string]: any;
 }
 
-export interface NavigationProps {
+interface NavigationProps {
     list: NavigationListItem[];
     bottomList?: NavigationListItem[];
     selected?: NavigationListItem;
