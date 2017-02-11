@@ -84,9 +84,10 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
     private buildTree(item: NavigationListItem, indent: number, depth: number, path: string) {
         // Check if it is collapsible
         let collapsible = item.children ? item.collapsible !== false : false;
+        let collapsed = collapsible && this.state.expansionMap.get(item) === false;
 
         // Determine the icon to use
-        let icon = item.icon || (collapsible ? 'caret-down' : '');
+        let icon = item.icon || (collapsible ? (collapsed ? 'caret-down' : 'caret-right') : '');
 
         // Build the icon component
         let iconComp = icon ? <Icon name={icon} className="Navigation icon"></Icon> : <span className="Navigation icon" />;
@@ -114,7 +115,7 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
             });
 
             let subitems = <div key={`${path}/`} className={
-                this.state.expansionMap.get(item) !== false ? '' : 'Navigation hidden'
+                collapsed ? 'Navigation hidden' : ''
             }>{items}</div>
             return [comp, subitems];
         }
