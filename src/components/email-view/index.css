@@ -1,0 +1,26 @@
+.EmailView.top {
+    display: block;
+    background: white;
+    padding: 2em;
+}
+
+.EmailView.header {
+    margin-bottom: 1em;
+}
+
+.EmailView.time {
+    font-size: 0.8em;
+    color: #777;
+}
+
+.EmailView.to {
+    font-size: 0.8em;
+}
+
+.EmailView.caption {
+    color: #777;
+}
+
+.EmailView.plain {
+    white-space: pre-wrap;
+}
