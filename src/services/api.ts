@@ -159,6 +159,27 @@ export class Message {
     date: Date;
     summary: string;
     unread: boolean;
+
+    private content: Content;
+
+    async getContent() {
+        if (!this.content) {
+            let url = `folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}`;
+            let json = await get(url);
+
+            let content = new Content();
+            content.type = json['content-type'];
+            content.content = json.content;
+
+            this.content = content;
+        }
+        return this.content;
+    }
+}
+
+export class Content {
+    type: string;
+    content: string;
 }
 
 export class Contact {
