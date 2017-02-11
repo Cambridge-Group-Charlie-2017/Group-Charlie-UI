@@ -36,8 +36,10 @@ let selected: NavigationListItem = null;
 function render() {
     ReactDOM.render(
         <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={e => {
-            selected = e;
-            render();
+            if ('folder' in e) {
+                selected = e;
+                render();
+            }
         }} />,
         document.getElementById("root")
     );
@@ -47,7 +49,8 @@ import { Store, Folder } from './services/api';
 
 function folderToListItem(f: Folder) {
     let ret: NavigationListItem = {
-        text: <span>{f.name}{f.unread > 0 ? <span style={{ float: 'right' }}>{f.unread}</span> : null}</span>
+        text: <span>{f.name}{f.unread > 0 ? <span style={{ float: 'right' }}>{f.unread}</span> : null}</span>,
+        folder: f
     };
     if (f.subfolder.length) {
         let subitems = f.subfolder.map(folderToListItem);
