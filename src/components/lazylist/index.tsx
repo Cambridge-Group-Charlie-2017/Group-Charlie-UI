@@ -14,8 +14,7 @@ interface LazyListProps {
 interface LazyListState {
     start: number,
     end: number,
-    items: any[],
-    itemViews: JSX.Element[]
+    items: any[]
 }
 
 export class LazyList extends React.Component<LazyListProps, LazyListState> {
@@ -28,8 +27,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         this.state = {
             start: 0,
             end: 0,
-            items: [],
-            itemViews: []
+            items: []
         };
     }
 
@@ -66,8 +64,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
             this.setState({
                 start: startPrefetch,
                 end: endPrefetch,
-                items: value,
-                itemViews: views
+                items: value
             });
         });
     }
@@ -94,8 +91,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
                     this.setState({
                         start: start,
                         end: end,
-                        items: items,
-                        itemViews: views
+                        items: items
                     });
                 }
             }
@@ -131,12 +127,12 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
     }
 
     render() {
-        let items = this.state.itemViews.map((item, i) => {
+        let items = this.state.items.map((item, i) => {
             let id = i + this.state.start;
             return <div className="LazyList wrapper" key={id} style={{
                 top: (id * this.props.itemHeight) + 'px',
                 height: this.props.itemHeight + 'px'
-            }}>{item}</div>;
+            }}>{this.props.render(item, id)}</div>;
         });
         return <div ref="scrollable" className="LazyList panel" onScroll={e => this.onScroll(e)}>
             <div className="LazyList container" style={{
