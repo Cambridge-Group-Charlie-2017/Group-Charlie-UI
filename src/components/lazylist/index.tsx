@@ -32,8 +32,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
 
     componentDidMount() {
         this.mounted = true;
-        let el = this.refs['scrollable'] as HTMLDivElement;
-        this.slowAdjustViewport(0, Math.min(this.props.length, Math.floor(el.clientHeight / this.props.itemHeight) + 1));
+        this.componentWillReceiveProps(this.props);
     }
 
     componentWillUnmount() {
@@ -41,17 +40,20 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         clearTimeout(this.timeout);
     }
 
-    componentWillReceiveProps() {
-        if (this.mounted)
-            this.componentDidMount();
+    componentWillReceiveProps(props: LazyListProps) {
+        if (this.mounted) {
+            let el = this.refs['scrollable'] as HTMLDivElement;
+            this.slowAdjustViewport(0, Math.floor(el.clientHeight / this.props.itemHeight) + 1, props);
+        }
     }
 
-    private slowAdjustViewport(start: number, end: number) {
-        let [w1, w2] = this.props.prefetchWindow || [20, 20];
+    private slowAdjustViewport(start: number, end: number, props: LazyListProps = this.props) {
+        let [w1, w2] = props.prefetchWindow || [20, 20];
         let startPrefetch = Math.max(start - w1, 0);
-        let endPrefetch = Math.min(end + w2, this.props.length);
+        let endPrefetch = Math.min(end + w2, props.length);
+        console.log(endPrefetch);
 
-        this.props.load(startPrefetch, endPrefetch).then(value => {
+        props.load(startPrefetch, endPrefetch).then(value => {
             this.setState({
                 start: startPrefetch,
                 end: endPrefetch,
@@ -65,6 +67,9 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
             clearTimeout(this.timeout);
             this.timeout = 0;
         }
+
+        start = Math.max(start, 0);
+        end = Math.min(end, this.props.length);
 
         // If current prefetch window does not fit
         if (start < this.state.start || end > this.state.end) {

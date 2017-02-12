@@ -29,28 +29,28 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
 
     componentDidMount() {
         this.mounted = true;
-
-        this.props.item.getContent().then(content => {
-            let html: string;
-            if (content.type === 'text/html') {
-                html = sanitize(content.content);
-            } else {
-                html = linkify(content.content);
-            }
-            this.setState({
-                content: html,
-                type: content.type
-            });
-        });
+        this.componentWillReceiveProps(this.props);
     }
 
     componentWillUnmount() {
         this.mounted = false;
     }
 
-    componentWillReceiveProps() {
-        if (this.mounted)
-            this.componentDidMount();
+    componentWillReceiveProps(props: EmailViewProps) {
+        if (this.mounted) {
+            props.item.getContent().then(content => {
+                let html: string;
+                if (content.type === 'text/html') {
+                    html = sanitize(content.content);
+                } else {
+                    html = linkify(content.content);
+                }
+                this.setState({
+                    content: html,
+                    type: content.type
+                });
+            });
+        }
     }
 
     getTime() {
