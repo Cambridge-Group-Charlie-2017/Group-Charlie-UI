@@ -5,8 +5,9 @@ import './index.css';
 interface LazyListProps {
     length: number;
     itemHeight: number;
-    fastload?: (start: number, end: number) => any[];
-    load: (start: number, end: number) => Promise<any[]>;
+    context?: any;
+    fastload?: (start: number, end: number, context: any) => any[];
+    load: (start: number, end: number, context: any) => Promise<any[]>;
     render: (value: any, id: number) => JSX.Element;
     prefetchWindow?: [number, number];
     onSelect?: (value:any, id: number) => void;
@@ -50,7 +51,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
 
     componentWillReceiveProps(props: LazyListProps) {
         if (this.mounted) {
-            if (this.props.length === props.length) return;
+            if (this.props.context === props.context) return;
             this.reloadViewport(props);
         }
     }
@@ -60,7 +61,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         let startPrefetch = Math.max(start - w1, 0);
         let endPrefetch = Math.min(end + w2, props.length);
 
-        props.load(startPrefetch, endPrefetch).then(value => {
+        props.load(startPrefetch, endPrefetch, props.context).then(value => {
             let views = value.map((value, i) => {
                 return props.render(value, i + startPrefetch);
             });
@@ -86,7 +87,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
             // If possible, call fastload and present result immediately
             if (this.props.fastload) {
                 // Don't do prefetching here. Only load visible data
-                let items = this.props.fastload(start, end);
+                let items = this.props.fastload(start, end, this.props.context);
                 if (items) {
                     let views = items.map((value, i) => {
                         return this.props.render(value, i + start);
