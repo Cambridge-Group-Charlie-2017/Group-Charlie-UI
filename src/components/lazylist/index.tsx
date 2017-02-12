@@ -45,6 +45,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
 
     private reloadViewport(props: LazyListProps) {
         let el = this.refs['scrollable'] as HTMLDivElement;
+        el.scrollTop = 0;
         this.slowAdjustViewport(0, Math.floor(el.clientHeight / this.props.itemHeight) + 1, props);
         console.info('[LazyList] Reloading viewport');
     }

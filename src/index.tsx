@@ -95,14 +95,16 @@ function render() {
         count = folder.msgnum;
     }
 
-    let lazyList = <LazyList length={count} context={selected} itemHeight={80} load={loadMessage} fastload={fastLoadMessage} render={renderMessage} onSelect={onSelectMessage} />;
-    let messagePane = selectedMessage ? <EmailView item={selectedMessage} /> : null;
+    let lazyList = count === 0
+        ? <div id="list-placeholder">{selected ? 'There are no messages in this folder.' : 'Select a folder to start.'}</div>
+        : <LazyList length={count} context={selected} itemHeight={80} load={loadMessage} fastload={fastLoadMessage} render={renderMessage} onSelect={onSelectMessage} />;
+    let messagePane = selectedMessage ? <div id="message"><EmailView item={selectedMessage} /></div> : null;
 
     ReactDOM.render(
         <div className="toplevel">
             <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={onNavClick} />
             {lazyList}
-            <div id="message">{messagePane}</div>
+            {messagePane}
         </div>,
         document.getElementById("root")
     );

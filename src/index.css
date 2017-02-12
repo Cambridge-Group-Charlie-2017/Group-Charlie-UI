@@ -18,7 +18,6 @@ body {
     background: url(https://upload.wikimedia.org/wikipedia/commons/a/a1/University_of_Cambridge_Computer_Laboratory.jpg);
     background-size: cover;
     background-position: center;
-    cursor: default;
 }
 
 .Navigation.panel {
@@ -27,15 +26,17 @@ body {
     left: 0;
     height: 100%;
     width: 200px;
+    cursor: default;
 }
 
-.LazyList.panel {
+.LazyList.panel, #list-placeholder {
     position: absolute;
     top: 0;
     left: 200px;
     height: 100%;
     width: 360px;
     border-left: 1px solid white;
+    cursor: default;
 }
 
 #message {
@@ -45,4 +46,11 @@ body {
     right: 0;
     height: 100%;
     overflow: auto;
+}
+
+#list-placeholder {
+    background: #F8F8F8;
+    padding-top: calc(50vh - 1em);
+    text-align: center;
+    color: #777;
 }
