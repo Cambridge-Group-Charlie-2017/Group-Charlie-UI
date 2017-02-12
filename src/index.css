@@ -18,6 +18,7 @@ body {
     background: url(https://upload.wikimedia.org/wikipedia/commons/a/a1/University_of_Cambridge_Computer_Laboratory.jpg);
     background-size: cover;
     background-position: center;
+    overflow: hidden;
 }
 
 .Navigation.panel {
@@ -35,7 +36,8 @@ body {
     left: 200px;
     height: 100%;
     width: 360px;
-    border-left: 1px solid white;
+    border-left: 1px solid #CCC;
+    border-right: 1px solid #CCC;
     cursor: default;
 }
 

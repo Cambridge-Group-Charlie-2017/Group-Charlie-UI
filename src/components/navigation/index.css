@@ -9,18 +9,18 @@
     -ms-user-select: none;
     user-select: none;
 
-    background: rgba(0, 0, 0 ,0.4);
+    background: rgba(0, 0, 0 ,0.6);
 
     position: relative;
 }
 
 .Navigation.item {
     color: #FFF;
-    padding: .5rem 1rem;
+    padding: .5em 1em;
 }
 
 .Navigation.subitem {
-    font-size: 0.9rem;
+    font-size: 0.9em;
 }
 
 .Navigation.item:hover {
