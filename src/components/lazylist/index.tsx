@@ -9,6 +9,7 @@ interface LazyListProps {
     load: (start: number, end: number) => Promise<any[]>;
     render: (value: any, id: number) => JSX.Element;
     prefetchWindow?: [number, number];
+    onSelect?: (value:any, id: number) => void;
 };
 
 interface LazyListState {
@@ -44,10 +45,12 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
     private reloadViewport(props: LazyListProps) {
         let el = this.refs['scrollable'] as HTMLDivElement;
         this.slowAdjustViewport(0, Math.floor(el.clientHeight / this.props.itemHeight) + 1, props);
+        console.info('[LazyList] Reloading viewport');
     }
 
     componentWillReceiveProps(props: LazyListProps) {
         if (this.mounted) {
+            if (this.props.length === props.length) return;
             this.reloadViewport(props);
         }
     }
@@ -126,10 +129,16 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         this.fastAdjustViewport(viewStart, viewEnd);
     }
 
+    private onClick(value:any, id: number) {
+        if (this.props.onSelect) {
+            this.props.onSelect(value, id);
+        }
+    }
+
     render() {
         let items = this.state.items.map((item, i) => {
             let id = i + this.state.start;
-            return <div className="LazyList wrapper" key={id} style={{
+            return <div className="LazyList wrapper" key={id} onClick={() => this.onClick(item, id)} style={{
                 top: (id * this.props.itemHeight) + 'px',
                 height: this.props.itemHeight + 'px'
             }}>{this.props.render(item, id)}</div>;
