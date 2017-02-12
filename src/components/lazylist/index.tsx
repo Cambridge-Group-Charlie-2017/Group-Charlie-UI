@@ -5,15 +5,17 @@ import './index.css';
 interface LazyListProps {
     length: number;
     itemHeight: number;
-    fastload?: (start: number, end: number) => JSX.Element[];
-    load: (start: number, end: number) => Promise<JSX.Element[]>;
+    fastload?: (start: number, end: number) => any[];
+    load: (start: number, end: number) => Promise<any[]>;
+    render: (value: any, id: number) => JSX.Element;
     prefetchWindow?: [number, number];
 };
 
 interface LazyListState {
     start: number,
     end: number,
-    items: JSX.Element[]
+    items: any[],
+    itemViews: JSX.Element[]
 }
 
 export class LazyList extends React.Component<LazyListProps, LazyListState> {
@@ -26,13 +28,14 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         this.state = {
             start: 0,
             end: 0,
-            items: []
+            items: [],
+            itemViews: []
         };
     }
 
     componentDidMount() {
         this.mounted = true;
-        this.componentWillReceiveProps(this.props);
+        this.reloadViewport(this.props);
     }
 
     componentWillUnmount() {
@@ -40,10 +43,14 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         clearTimeout(this.timeout);
     }
 
+    private reloadViewport(props: LazyListProps) {
+        let el = this.refs['scrollable'] as HTMLDivElement;
+        this.slowAdjustViewport(0, Math.floor(el.clientHeight / this.props.itemHeight) + 1, props);
+    }
+
     componentWillReceiveProps(props: LazyListProps) {
         if (this.mounted) {
-            let el = this.refs['scrollable'] as HTMLDivElement;
-            this.slowAdjustViewport(0, Math.floor(el.clientHeight / this.props.itemHeight) + 1, props);
+            this.reloadViewport(props);
         }
     }
 
@@ -51,13 +58,16 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         let [w1, w2] = props.prefetchWindow || [20, 20];
         let startPrefetch = Math.max(start - w1, 0);
         let endPrefetch = Math.min(end + w2, props.length);
-        console.log(endPrefetch);
 
         props.load(startPrefetch, endPrefetch).then(value => {
+            let views = value.map((value, i) => {
+                return props.render(value, i + startPrefetch);
+            });
             this.setState({
                 start: startPrefetch,
                 end: endPrefetch,
-                items: value
+                items: value,
+                itemViews: views
             });
         });
     }
@@ -78,10 +88,14 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
                 // Don't do prefetching here. Only load visible data
                 let items = this.props.fastload(start, end);
                 if (items) {
+                    let views = items.map((value, i) => {
+                        return this.props.render(value, i + start);
+                    });
                     this.setState({
                         start: start,
                         end: end,
-                        items: items
+                        items: items,
+                        itemViews: views
                     });
                 }
             }
@@ -117,7 +131,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
     }
 
     render() {
-        let items = this.state.items.map((item, i) => {
+        let items = this.state.itemViews.map((item, i) => {
             let id = i + this.state.start;
             return <div className="LazyList wrapper" key={id} style={{
                 top: (id * this.props.itemHeight) + 'px',
