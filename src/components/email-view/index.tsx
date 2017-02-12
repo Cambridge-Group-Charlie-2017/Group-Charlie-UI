@@ -3,7 +3,7 @@ import * as moment from 'moment';
 
 import { Message, Content } from '../../services/api';
 import { linkify } from '../../services/linkify';
-import { sanitize } from '../../services/sanitize';
+import { Sanitizer } from '../../services/sanitize';
 import './index.css';
 
 interface EmailViewProps {
@@ -41,7 +41,22 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
             props.item.getContent().then(content => {
                 let html: string;
                 if (content.type === 'text/html') {
-                    html = sanitize(content.content);
+                    let sanitizer = new class extends Sanitizer {
+                        sanitizeUrl(url: string) {
+                            url = super.sanitizeUrl(url);
+                            if (!url) return url;
+
+                            // This means image from attachment
+                            // We transform the URL then
+                            if (url.startsWith('cid:')) {
+                                return props.item.getCidUrl(url.substring(4));
+                            }
+                            return url;
+                        }
+                    };
+                    sanitizer.protocolAllowList['cid'] = true;
+
+                    html = sanitizer.sanitize(content.content);
                 } else {
                     html = linkify(content.content);
                 }

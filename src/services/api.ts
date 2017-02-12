@@ -175,6 +175,10 @@ export class Message {
         }
         return this.content;
     }
+
+    getCidUrl(cid: string) {
+        return `${BASE}/folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/${encodeURIComponent(cid)}`;
+    }
 }
 
 export class Content {
