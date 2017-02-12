@@ -99,26 +99,8 @@ export class Folder {
             throw 'Unexpected API return value';
         }
 
-        function deserializeContact(obj: any) {
-            let contact = new Contact();
-            contact.name = obj.name;
-            contact.address = obj.address;
-            return contact;
-        }
-
         return json.map((obj, i) => {
-            let msg = new Message();
-            msg.folder = this;
-            msg.msgid = i + start;
-            msg.from = deserializeContact(obj.from);
-            msg.to = obj.to.map(deserializeContact);
-            msg.cc = obj.cc.map(deserializeContact);
-            msg.bcc = obj.bcc.map(deserializeContact);
-            msg.subject = obj.subject;
-            msg.date = new Date(obj.date);
-            msg.summary = obj.summary;
-            msg.unread = obj.unread;
-            return msg;
+            return Message.deserialize(obj, this, i + start);
         });
     }
 
@@ -179,6 +161,21 @@ export class Message {
     getCidUrl(cid: string) {
         return `${BASE}/folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/${encodeURIComponent(cid)}`;
     }
+
+    static deserialize(json: any, folder: Folder, index: number) {
+        let msg = new Message();
+        msg.folder = folder;
+        msg.msgid = index;
+        msg.from = Contact.deserialize(json.from);
+        msg.to = json.to.map(Contact.deserialize);
+        msg.cc = json.cc.map(Contact.deserialize);
+        msg.bcc = json.bcc.map(Contact.deserialize);
+        msg.subject = json.subject;
+        msg.date = new Date(json.date);
+        msg.summary = json.summary;
+        msg.unread = json.unread;
+        return msg;
+    }
 }
 
 export class Content {
@@ -193,5 +190,12 @@ export class Contact {
     toString() {
         if (this.name) return `${this.name} <${this.address}>`;
         return this.address;
+    }
+
+    static deserialize(json: any) {
+        let contact = new Contact();
+        contact.name = json.name;
+        contact.address = json.address;
+        return contact;
     }
 }
