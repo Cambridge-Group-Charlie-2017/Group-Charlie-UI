@@ -18,6 +18,8 @@ interface NavigationProps {
     selected?: NavigationListItem;
     expandByDefault?: boolean;
     onSelect?: (selected: NavigationListItem) => void;
+
+    className?: string;
 };
 
 interface NavigationState {
@@ -136,9 +138,11 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
                 bottomItems.push(...this.buildTree(item, 0, 0, `b${i}`));
             });
         }
-        return <div className="Navigation panel">
-            <div>{items}</div>
-            {bottomItems.length ? <div className="Navigation bottom">{bottomItems}</div> : null}
+        return <div className={this.props.className}>
+            <div className="Navigation panel">
+                <div>{items}</div>
+                {bottomItems.length ? <div className="Navigation bottom">{bottomItems}</div> : null}
+            </div>
         </div>;
     }
 }
