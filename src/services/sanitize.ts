@@ -21,18 +21,13 @@ class DOM {
     static remove: (x: Element) => void = x => Element.prototype.remove.call(x);
     static setAttribute: (x: Element, name: string, value: string) => void = (x, name, value) => Element.prototype.setAttribute.call(x, name, value);
     static getAttribute: (x: Element, name: string) => string = (x, name) => Element.prototype.getAttribute.call(x, name);
-    static setAttributeX(x: Element, name: string, value: string) {
-        if (value !== null) DOM.setAttribute(x, name, value);
-        else DOM.removeAttribute(x, name);
-    }
     static removeAttribute: (x: Element, name: string) => void = (x, name) => Element.prototype.removeAttribute.call(x, name);
     static insertBefore: (x: Node, newNode: Node, refNode: Node) => void = (x, newNode, refNode) => Node.prototype.insertBefore.call(x, newNode, refNode);
 
     static style: (x: HTMLElement) => CSSStyleDeclaration = getter(HTMLElement, 'style');
 }
 
-class Sanitizer {
-
+export class Sanitizer {
     tagAllowList: { [tag: string]: boolean; } = listToSet([
         // Special HTML Elements
         'html', 'body', 'head',
@@ -185,9 +180,18 @@ class Sanitizer {
                     break;
                 case 'href':
                 case 'target': {
+                    // Get href and sanitize
                     let href = DOM.getAttribute(element, 'href');
-                    if (href) href = this.sanitizeUrl(href) || '';
-                    DOM.setAttributeX(element, 'href', href);
+                    let newhref = href && this.sanitizeUrl(href);
+
+                    if (newhref !== null)
+                        DOM.setAttribute(element, 'href', href);
+                    else if (href !== null) {
+                        // If sanitized, emit a debug message
+                        let comment = document.createComment(`url ${href} ignored`);
+                        DOM.insertBefore(DOM.parentNode(element), comment, element);
+                        DOM.removeAttribute(element, 'href');
+                    }
                     if (href && href[0] !== '#') {
                         DOM.setAttribute(element, 'target', '_blank');
                     } else {
@@ -196,7 +200,14 @@ class Sanitizer {
                     break;
                 }
                 case 'src': {
-                    attribute.value = this.sanitizeUrl(attribute.value) || '';
+                    let newsrc = this.sanitizeUrl(attribute.value);
+                    if (newsrc === null) {
+                        // If an image is sanitized, emit a message
+                        let comment = document.createComment(`url ${attribute.value} ignored`);
+                        DOM.insertBefore(DOM.parentNode(element), comment, element);
+                        DOM.removeAttribute(element, 'href');
+                    }
+                    attribute.value = newsrc || '';
                     break;
                 }
                 case 'fill':
@@ -281,16 +292,15 @@ class Sanitizer {
         }
     }
 
-}
+    sanitize(html: string) {
+        let parser = new DOMParser();
+        let document = parser.parseFromString(html, "text/html");
 
-export function sanitize(html: string) {
-    let parser = new DOMParser();
-    let document = parser.parseFromString(html, "text/html");
+        // Be careful, before sanitizing we need to avoid clobbering
+        this.sanitizeElement(DOM.documentElement(document));
 
-    let sanitizer = new Sanitizer();
+        // Safe to do this now as we've removed clobbering (if any)
+        return document.head.innerHTML + document.body.innerHTML;
+    }
 
-    // Be careful, before sanitizing we need to avoid clobbering
-    sanitizer.sanitizeElement(DOM.documentElement(document));
-
-    return document.head.innerHTML + document.body.innerHTML;
 }
