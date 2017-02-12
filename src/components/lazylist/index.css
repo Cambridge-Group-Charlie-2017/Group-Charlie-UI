@@ -1,6 +1,11 @@
 .LazyList.panel {
     overflow-y: auto;
     background: #F8F8F8;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .LazyList.wrapper {

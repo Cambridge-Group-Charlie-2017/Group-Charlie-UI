@@ -53,4 +53,9 @@ body {
     padding-top: calc(50vh - 1em);
     text-align: center;
     color: #777;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
