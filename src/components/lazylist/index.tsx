@@ -61,6 +61,16 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         let startPrefetch = Math.max(start - w1, 0);
         let endPrefetch = Math.min(end + w2, props.length);
 
+        // Don't call load() if the range is empty
+        if (startPrefetch === endPrefetch) {
+            this.setState({
+                start: startPrefetch,
+                end: endPrefetch,
+                items: []
+            });
+            return;
+        }
+
         props.load(startPrefetch, endPrefetch, props.context).then(value => {
             let views = value.map((value, i) => {
                 return props.render(value, i + startPrefetch);
@@ -85,7 +95,7 @@ export class LazyList extends React.Component<LazyListProps, LazyListState> {
         // If current prefetch window does not fit
         if (start < this.state.start || end > this.state.end) {
             // If possible, call fastload and present result immediately
-            if (this.props.fastload) {
+            if (this.props.fastload && start !== end) {
                 // Don't do prefetching here. Only load visible data
                 let items = this.props.fastload(start, end, this.props.context);
                 if (items) {
