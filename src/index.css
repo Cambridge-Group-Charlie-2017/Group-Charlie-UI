@@ -4,7 +4,7 @@
 }
 
 /* Allows usage of vertical height percentage */
-html, body, #root {
+html, body, #root, .toplevel {
     height: 100%;
 }
 
@@ -22,6 +22,27 @@ body {
 }
 
 .Navigation.panel {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
     width: 200px;
+}
+
+.LazyList.panel {
+    position: absolute;
+    top: 0;
+    left: 200px;
+    height: 100%;
+    width: 360px;
+    border-left: 1px solid white;
+}
+
+#message {
+    position: absolute;
+    top: 0;
+    left: 560px;
+    right: 0;
+    height: 100%;
+    overflow: auto;
 }

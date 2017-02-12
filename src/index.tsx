@@ -12,6 +12,11 @@ import 'normalize.css';
 import './index.css';
 
 import { Navigation, NavigationListItem } from './components/navigation';
+import { LazyList } from './components/lazylist';
+import { ItemSummary } from './components/item-summary';
+import { EmailView } from './components/email-view';
+
+import { Store, Folder, Message } from './services/api';
 
 let navigationPanel: NavigationListItem[] = [{
     text: '',
@@ -33,19 +38,75 @@ let bottomNavigationItems: NavigationListItem[] = [{
 }];
 
 let selected: NavigationListItem = null;
+let selectedMessage: Message = null;
+
+function onNavClick(item: NavigationListItem) {
+    if ('folder' in item && selected !== item) {
+        selected = item;
+        selectedMessage = null;
+        render();
+    }
+}
+
+async function loadMessage(start: number, end: number): Promise<any[]> {
+    if (!selected) {
+        return [];
+    }
+    let folder = (selected as any).folder as Folder;
+
+    let realStart = folder.msgnum - end + 1;
+    let realEnd = folder.msgnum - start + 1;
+
+    let messages = await folder.getMessages(realStart, realEnd);
+    return messages.reverse();
+}
+
+function fastLoadMessage(start: number, end: number): any[] {
+    if (!selected) {
+        return [];
+    }
+    let folder = (selected as any).folder as Folder;
+
+    let realStart = folder.msgnum - end + 1;
+    let realEnd = folder.msgnum - start + 1;
+
+    let messages = folder.getCachedMessage(realStart, realEnd);
+    if (!messages) return null;
+    return messages.reverse();
+}
+
+function renderMessage(obj: Message, id: number) {
+    return <ItemSummary item={obj} selected={selectedMessage === obj} />;
+}
+
+function onSelectMessage(msg: Message) {
+    if (selectedMessage === msg) {
+        selectedMessage = null;
+    } else {
+        selectedMessage = msg;
+    }
+    render();
+}
+
 function render() {
+    let count = 0;
+    if (selected) {
+        let folder = (selected as any).folder as Folder;
+        count = folder.msgnum;
+    }
+
+    let lazyList = <LazyList length={count} context={selected} itemHeight={80} load={loadMessage} fastload={fastLoadMessage} render={renderMessage} onSelect={onSelectMessage} />;
+    let messagePane = selectedMessage ? <EmailView item={selectedMessage} /> : null;
+
     ReactDOM.render(
-        <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={e => {
-            if ('folder' in e) {
-                selected = e;
-                render();
-            }
-        }} />,
+        <div className="toplevel">
+            <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={onNavClick} />
+            {lazyList}
+            <div id="message">{messagePane}</div>
+        </div>,
         document.getElementById("root")
     );
 }
-
-import { Store, Folder } from './services/api';
 
 function folderToListItem(f: Folder) {
     let ret: NavigationListItem = {
@@ -67,6 +128,7 @@ async function main() {
     navigationPanel[2].children = f.map(folderToListItem);
     render();
 }
+
 
 render();
 main();
