@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as moment from 'moment';
 
 import { Message } from '../../services/api';
+import { Icon } from '../icon';
 import './index.css';
 
 interface ItemSummaryProps {
@@ -25,7 +26,10 @@ export class ItemSummary extends React.Component<ItemSummaryProps, {}> {
     render() {
         let item = this.props.item;
         return <div className={`ItemSummary top${item.unread ? ' unread' : ''}${this.props.selected ? ' selected' : ''}`}>
-            <div className="ItemSummary contact">{item.from.name || item.from.address || '(no sender)'}</div>
+            <div className="ItemSummary headline">
+                <div className="ItemSummary contact">{item.from.name || item.from.address || '(no sender)'}</div>
+                <div className="ItemSummary status">{item.hasAttachment ? <Icon name="paperclip"/> : null}</div>
+            </div>
             <div className="ItemSummary title-line">
                 <span className="ItemSummary title">{item.subject || '(no subject)'}</span>
                 <span className="ItemSummary time">{this.getTime()}</span>

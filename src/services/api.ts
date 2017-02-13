@@ -141,6 +141,7 @@ export class Message {
     date: Date;
     summary: string;
     unread: boolean;
+    hasAttachment: boolean;
 
     private content: Content;
 
@@ -174,6 +175,7 @@ export class Message {
         msg.date = new Date(json.date);
         msg.summary = json.summary;
         msg.unread = json.unread;
+        msg.hasAttachment = json.hasAttachment;
         return msg;
     }
 }

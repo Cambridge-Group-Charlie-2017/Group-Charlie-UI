@@ -33,11 +33,27 @@
     color: rgb(16, 110, 190);
 }
 
+.ItemSummary.headline::after {
+    display: block;
+    content: "";
+    clear: both;
+}
+
 .ItemSummary.contact {
+    display: block;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+    float: left;
     width: calc(100% - 80px);
+}
+
+.ItemSummary.status {
+    display: block;
+    text-align: right;
+    width: 80px;
+    float: right;
+    color: #777;
 }
 
 .ItemSummary.title-line {
