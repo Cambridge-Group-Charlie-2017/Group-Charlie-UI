@@ -1,3 +1,5 @@
+var copyWebpackPlugin = require('copy-webpack-plugin');
+
 module.exports = {
     entry: "./src/index.tsx",
     output: {
@@ -21,7 +23,7 @@ module.exports = {
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             { test: /\.js$/, loader: "source-map-loader" },
             // All files with a '.css' extension will be handled by 'style-loader' and 'css-loader'.
-            { test: /\.css$/, loader: "style-loader!css-loader"},
+            { test: /\.css$/, loader: "style-loader!css-loader" },
         ]
     },
 
@@ -31,6 +33,14 @@ module.exports = {
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
         "react": "React",
-        "react-dom": "ReactDOM"
+        "react-dom": "ReactDOM",
     },
+
+    plugins: [
+        new copyWebpackPlugin([
+            { from: './node_modules/tinymce/plugins', to: './plugins' },
+            { from: './node_modules/tinymce/themes', to: './themes' },
+            { from: './node_modules/tinymce/skins', to: './skins' }
+        ])
+    ]
 };

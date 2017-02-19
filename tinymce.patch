@@ -1,0 +1,11 @@
+--- a/node_modules/tinymce/tinymce.js
++++ b/node_modules/tinymce/tinymce.js
+@@ -45542,7 +45542,7 @@
+ ], function(DOMUtils) {
+ 	var getSpecifiedFontProp = function (propName, rootElm, elm) {
+ 		while (elm !== rootElm) {
+-			if (elm.style[propName]) {
++			if (elm.style && elm.style[propName]) {
+ 				return elm.style[propName];
+ 			}
+ 
