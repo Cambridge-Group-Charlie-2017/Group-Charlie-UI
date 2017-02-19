@@ -1,16 +1,16 @@
 declare namespace tinymce {
 
   namespace util {
-    export interface Observable<Self extends Observable<Self>> {
+    export interface Observable {
       fire(name: string, args?: any, bubble?: boolean): any;
       hasEventListeners(name: string): any;
-      off(name?: string, callback?: () => void): Self;
-      on(name: string, callback: () => void, first?: boolean): Self;
-      once(name: string, callback: () => void): Self;
+      off(name?: string, callback?: () => void): this;
+      on(name: string, callback: () => void, first?: boolean): this;
+      once(name: string, callback: () => void): this;
     }
   }
 
-  export interface EditorObservable<Self extends EditorObservable<Self>> extends util.Observable<Self> {
+  export interface EditorObservable extends util.Observable {
 
   }
 
@@ -24,7 +24,7 @@ declare namespace tinymce {
     cmd?: string;
   }
 
-  export interface Editor extends EditorObservable<Editor> {
+  export interface Editor extends EditorObservable {
     addButton(name: string, settings: AddButtonSettings): void;
 
     destroy(automatic?: boolean): void;
