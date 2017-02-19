@@ -153,6 +153,7 @@ export class Message {
             let content = new Content();
             content.type = json['content-type'];
             content.content = json.content;
+            content.attachment = json.attachment;
 
             this.content = content;
         }
@@ -160,7 +161,12 @@ export class Message {
     }
 
     getCidUrl(cid: string) {
-        return `${BASE}/folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/${encodeURIComponent(cid)}`;
+        return `${BASE}/folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/cid/${encodeURIComponent(cid)}`;
+    }
+
+    openAttachment(name: string) {
+        let url = `folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/att/${encodeURIComponent(name)}`;
+        return get(url);
     }
 
     static deserialize(json: any, folder: Folder, index: number) {
@@ -183,6 +189,7 @@ export class Message {
 export class Content {
     type: string;
     content: string;
+    attachment: string[];
 }
 
 export class Contact {

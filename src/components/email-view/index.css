@@ -24,3 +24,39 @@
 .EmailView.plain {
     white-space: pre-wrap;
 }
+
+.EmailView.attachment {
+    margin-right: 1em;
+    margin-bottom: .5em;
+    padding: .5em 1em;
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    background: #F3F3F3;
+    color: #333;
+    font-size: 0.9em;
+
+    float: left;
+}
+
+.EmailView.attachment:hover {
+    background: #D2D2D2;
+}
+
+.EmailView.attContainer {
+    margin-bottom: 1em;
+}
+
+.EmailView.attContainer::after {
+    content: ' ';
+    display: block;
+    clear: both;
+}
+
+.EmailView .fa {
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 5px;
+}

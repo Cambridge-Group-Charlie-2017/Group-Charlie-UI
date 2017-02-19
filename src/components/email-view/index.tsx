@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as moment from 'moment';
 
+import { Icon } from '../icon';
+
 import { Message, Content } from '../../services/api';
 import { linkify } from '../../services/linkify';
 import { Sanitizer } from '../../services/sanitize';
@@ -11,8 +13,8 @@ interface EmailViewProps {
 }
 
 interface EmailViewState {
-    content: string,
-    type: string
+    content: Content;
+    parsedContent: string;
 }
 
 export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
@@ -23,7 +25,7 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
 
         this.state = {
             content: null,
-            type: null
+            parsedContent: null,
         };
     }
 
@@ -37,6 +39,10 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
     }
 
     componentWillReceiveProps(props: EmailViewProps) {
+        this.setState({
+            content: null,
+            parsedContent: null
+        });
         if (this.mounted) {
             props.item.getContent().then(content => {
                 let html: string;
@@ -61,11 +67,15 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
                     html = linkify(content.content);
                 }
                 this.setState({
-                    content: html,
-                    type: content.type
+                    content: content,
+                    parsedContent: html,
                 });
             });
         }
+    }
+
+    private openAttachment(name: string) {
+        this.props.item.openAttachment(name);
     }
 
     getTime() {
@@ -92,7 +102,10 @@ export class EmailView extends React.Component<EmailViewProps, EmailViewState> {
                     {item.bcc.join('; ')}
                 </div> : null}
             </div>
-            <div className={this.state.type === 'text/plain' ? 'EmailView plain' : ''} dangerouslySetInnerHTML={{ __html: this.state.content }}></div>
+            {this.state.content ? <div className="EmailView attContainer">{
+                this.state.content.attachment.map(name => <div className="EmailView attachment" onClick={() => this.openAttachment(name)} key={name}><Icon name="file-o" />{name}</div>)}
+            </div> : null}
+            {this.state.content ? <div className={this.state.content.type === 'text/plain' ? 'EmailView plain' : ''} dangerouslySetInnerHTML={{ __html: this.state.parsedContent }}></div> : null}
         </div>;
     }
 }
