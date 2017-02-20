@@ -25,11 +25,13 @@ declare namespace tinymce {
   }
 
   export interface Editor extends EditorObservable {
+    undoManager: UndoManager;
+
     addButton(name: string, settings: AddButtonSettings): void;
 
     destroy(automatic?: boolean): void;
 
-    focus: (skip_focus?: boolean) => void;
+    focus(skip_focus?: boolean): void;
 
     getContainer(): Element;
     getContent(args?: any): string;
@@ -38,15 +40,19 @@ declare namespace tinymce {
 
     hide(): void;
 
-    remove: () => void;
+    remove(): void;
 
-    setContent: (content: string, args?: any) => string;
+    setContent(content: string, args?: any): string;
 
-    show: () => void;
+    show(): void;
+  }
+
+  export interface UndoManager {
+    clear(): void;
   }
 
   export interface Static {
-    init: (settings: any) => Promise<tinymce.Editor>;
+    init(settings: any): Promise<tinymce.Editor>;
   }
 }
 

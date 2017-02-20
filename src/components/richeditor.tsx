@@ -36,6 +36,7 @@ export class RichEditor extends React.Component<RichEditorProps, RichEditorState
             if (this.editor) {
                 console.info('[RichEditor] Reloading content');
                 this.editor.setContent(content);
+                this.editor.undoManager.clear();
                 this.setState({
                     content: content
                 });
@@ -62,7 +63,7 @@ export class RichEditor extends React.Component<RichEditorProps, RichEditorState
         let textarea = this.refs['editor'] as HTMLDivElement;
         tinymce.init({
             target: textarea,
-            height: 500,
+            height: 200,
             menubar: false,
             plugins: [
                 'advlist anchor autolink code colorpicker',
