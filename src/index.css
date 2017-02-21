@@ -9,8 +9,11 @@ html, body, #root, .toplevel {
 }
 
 /* Replace normalize.css default fonts and line-heights */
-html {
+html, input, button {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+
+html {
     line-height: 1.5;
 }
 
@@ -60,4 +63,13 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.msgSection {
+    background: white;
+    padding-bottom: 1em;
+}
+
+.msgSection:not(:first-child) {
+    border-top: 1px solid #CCC;
 }
