@@ -28,7 +28,10 @@ export class ItemSummary extends React.Component<ItemSummaryProps, {}> {
         return <div className={`ItemSummary top${item.unread ? ' unread' : ''}${this.props.selected ? ' selected' : ''}`}>
             <div className="ItemSummary headline">
                 <div className="ItemSummary contact">{item.from.name || item.from.address || '(no sender)'}</div>
-                <div className="ItemSummary status">{item.hasAttachment ? <Icon name="paperclip"/> : null}</div>
+                <div className="ItemSummary status">
+                    {item.hasAttachment ? <Icon name="paperclip"/> : null}
+                    {item.flagged ? <Icon name="flag"/> : null}
+                </div>
             </div>
             <div className="ItemSummary title-line">
                 <span className="ItemSummary title">{item.subject || '(no subject)'}</span>
