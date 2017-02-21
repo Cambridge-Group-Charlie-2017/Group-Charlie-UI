@@ -38,7 +38,7 @@ export function linkify(content: string) {
                 url = url.substring(0, url.length - detLength);
                 index -= detLength;
             }
-            url = `<a href="${htmlEscape(encodeURI(url))}">${htmlEscape(url)}</a>`;
+            url = `<a target="_blank" href="${htmlEscape(encodeURI(url))}">${htmlEscape(url)}</a>`;
         } else {
             url = htmlEscape(url);
         }
