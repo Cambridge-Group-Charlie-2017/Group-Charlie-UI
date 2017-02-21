@@ -12,7 +12,7 @@ function propCheck(shape: string[], data: any) {
     return true;
 }
 
-export function get(endpoint: string, params: URLSearchParams = null) {
+function query(method: string, endpoint: string, params: URLSearchParams) {
     return new Promise<any>((resolve, reject) => {
         let url = `${BASE}/${endpoint}`;
         if (params) {
@@ -20,7 +20,7 @@ export function get(endpoint: string, params: URLSearchParams = null) {
         }
 
         let request = new XMLHttpRequest();
-        request.open('GET', url, true);
+        request.open(method, url, true);
 
         request.onload = function () {
             if (request.status >= 200 && request.status < 400) {
@@ -38,6 +38,15 @@ export function get(endpoint: string, params: URLSearchParams = null) {
         request.send();
     });
 }
+
+export function get(endpoint: string, params: URLSearchParams = null) {
+    return query('GET', endpoint, params);
+}
+
+export function patch(endpoint: string, params: URLSearchParams = null) {
+    return query('PATCH', endpoint, params);
+}
+
 
 export class Store {
     folders: Folder[];
@@ -100,7 +109,7 @@ export class Folder {
         }
 
         return json.map((obj, i) => {
-            return Message.deserialize(obj, this, i + start);
+            return RemoteMessage.deserialize(obj, this, i + start);
         });
     }
 
@@ -120,34 +129,64 @@ export class Folder {
     }
 }
 
-export class Message {
+export abstract class Message {
     /**
      * Folder containing this message
      */
-    folder: Folder;
+    folder: Folder = null;
     /**
      * Id of this message within the folder
      */
-    msgid: number;
+    msgid: number = -1;
 
     // In the web side, envelope for messages
     // should be loaded already when Message is created
-    from: Contact;
-    to: Contact[];
-    cc: Contact[];
-    bcc: Contact[];
+    from: Contact = null;
+    to: Contact[] = [];
+    cc: Contact[] = [];
+    bcc: Contact[] = [];
+    inReplyTo: string = "";
 
-    subject: string;
-    date: Date;
-    summary: string;
-    unread: boolean;
-    hasAttachment: boolean;
+    subject: string = "";
+    date: Date = null;
+    summary: string = "";
 
+    // Flags
+    unread: boolean = false;
+    flagged: boolean = false;
+    hasAttachment: boolean = false;
+
+    abstract getContent(): Promise<Content>;
+    abstract getContentSync(): Content;
+    abstract setContent(content: Content): Promise<void>;
+}
+
+export class LocalMessage extends Message {
     private content: Content;
 
     async getContent() {
+        return this.content;
+    }
+
+    async setContent(content: Content) {
+        this.content = content;
+    }
+
+    getContentSync() {
+        return this.content;
+    }
+}
+
+export class RemoteMessage extends Message {
+    private content: Content;
+
+    private get uid() {
+        return this.folder.path + '/' + this.msgid;
+    }
+
+    async getContent() {
         if (!this.content) {
-            let url = `folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}`;
+            let url = `messages/${encodeURIComponent(this.uid)}`;
             let json = await get(url);
 
             let content = new Content();
@@ -160,36 +199,61 @@ export class Message {
         return this.content;
     }
 
+    getContentSync() {
+        return this.content;
+    }
+
+    async setContent(content: Content) {
+        // TODO: Server sync
+        this.content = content;
+    }
+
     getCidUrl(cid: string) {
-        return `${BASE}/folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/cid/${encodeURIComponent(cid)}`;
+        return `${BASE}/messages/${encodeURIComponent(this.uid)}/cid/${encodeURIComponent(cid)}`;
     }
 
     openAttachment(name: string) {
-        let url = `folders/${encodeURIComponent(this.folder.path)}/messages/${this.msgid}/att/${encodeURIComponent(name)}`;
+        let url = `messages/${encodeURIComponent(this.uid)}/att/${encodeURIComponent(name)}`;
         return get(url);
     }
 
+    async setUnread(unread: boolean) {
+        let params = new URLSearchParams();
+        params.append('unread', String(unread));
+        await patch(`messages/${encodeURIComponent(this.uid)}`, params);
+        this.unread = unread;
+    }
+
+    async setFlagged(flagged: boolean) {
+        let params = new URLSearchParams();
+        params.append('flagged', String(flagged));
+        await patch(`messages/${encodeURIComponent(this.uid)}`, params);
+        this.flagged = flagged;
+    }
+
     static deserialize(json: any, folder: Folder, index: number) {
-        let msg = new Message();
+        let msg = new RemoteMessage();
         msg.folder = folder;
         msg.msgid = index;
         msg.from = Contact.deserialize(json.from);
         msg.to = json.to.map(Contact.deserialize);
         msg.cc = json.cc.map(Contact.deserialize);
         msg.bcc = json.bcc.map(Contact.deserialize);
+        msg.inReplyTo = json.inReplyTo;
         msg.subject = json.subject;
         msg.date = new Date(json.date);
         msg.summary = json.summary;
         msg.unread = json.unread;
+        msg.flagged = json.flagged;
         msg.hasAttachment = json.hasAttachment;
         return msg;
     }
 }
 
 export class Content {
-    type: string;
-    content: string;
-    attachment: string[];
+    type: string = "text/html";
+    content: string = "";
+    attachment: string[] = [];
 }
 
 export class Contact {
