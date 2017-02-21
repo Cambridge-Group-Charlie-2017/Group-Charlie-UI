@@ -1,0 +1,100 @@
+.EmailEditor.top {
+    display: block;
+    background: white;
+    padding: .5em 2em;
+}
+
+.EmailEditor.to {
+    font-size: 1em;
+    line-height: 1.25;
+    color: #464a4c;
+    border: 0;
+    display: inline-block;
+    width: calc(100% - 50px);
+}
+
+.EmailEditor.to-container {
+    border-bottom: 1px solid rgba(0,0,0,.15);
+    padding: .5em .75em;
+    font-size: 0.9em;
+    line-height: 1.25;
+    display: block;
+}
+
+.EmailEditor.to-caption {
+    display: inline-block;
+    width: 40px;
+    color: #777;
+}
+
+.EmailEditor.to:focus {
+    outline: 0;
+}
+
+.EmailEditor.subject {
+    font-size: 1em;
+    line-height: 1.5;
+    padding: .5em .75em;
+    color: #464a4c;
+    border: 0;
+    display: block;
+    border-bottom: 1px solid rgba(0,0,0,.15);
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.EmailEditor.subject:focus {
+    outline: 0;
+}
+
+.EmailEditor.attachment {
+    background: #F3F3F3;
+    color: #333;
+    width: 200px;
+
+    font-size: 0.9em;
+    float: left;
+
+    margin-right: 1em;
+    margin-bottom: .5em;
+}
+
+.EmailEditor.attName {
+    padding: .5em .5em .5em 1em;
+    width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+
+    float: left;
+}
+
+.EmailEditor.attContainer {
+    margin-bottom: 1em;
+}
+
+.EmailEditor.attContainer::after {
+    content: ' ';
+    display: block;
+    clear: both;
+}
+
+.EmailEditor.attIcon {
+    font-size: 1.5em;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.EmailEditor.attRemove {
+    font-size: 1em;
+    padding: .8em 0;
+    display: block;
+    float: right;
+    width: 20px;
+    text-align: center;
+}
+
+.EmailEditor.attRemove:hover {
+    background: #D2D2D2;
+}
