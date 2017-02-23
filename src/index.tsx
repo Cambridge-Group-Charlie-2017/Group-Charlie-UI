@@ -46,10 +46,12 @@ function sanitize(message: RemoteMessage, content: Content) {
 
 let navigationPanel: NavigationListItem[] = [{
     text: '',
-    icon: 'bars'
+    icon: 'bars',
+    handler: onNavClickNav
 }, {
     text: 'New email',
-    icon: 'plus'
+    icon: 'plus',
+    handler: onNavClickNew
 }, {
     text: 'Folders',
     icon: 'folder-o',
@@ -63,14 +65,47 @@ let bottomNavigationItems: NavigationListItem[] = [{
     icon: 'cog'
 }];
 
+let topNavigationFold: NavigationListItem[] = [{
+    text: '',
+    icon: 'bars',
+    handler: onNavClickNav
+}, {
+    text: '',
+    icon: 'plus',
+    handler: onNavClickNew
+}, {
+    text: '',
+    icon: 'folder-o'
+}];
+
+let bottomNavigationFold: NavigationListItem[] = [{
+    text: '',
+    icon: 'cog'
+}];
+
 let messagesInView: Message[] = [];
 
 let folderSelected: NavigationListItem = null;
 let threadSelected: Message = null;
 
+enum WideScreenMode {
+    WideScreen,
+    Desktop,
+    Tablet,
+    Mobile
+};
+let widescreenMode: WideScreenMode = null;
+let widescreenModeActual: WideScreenMode = null;
+let navigationPopup = false;
+let showSetting = false;
 
 /* Navigation Control */
 function onNavClick(item: NavigationListItem) {
+    let handler = item['handler'];
+    if (handler) {
+        handler();
+    }
+
     if (item === bottomNavigationItems[0]) {
         showSetting = true;
         render();
@@ -80,6 +115,67 @@ function onNavClick(item: NavigationListItem) {
         folderSelected = item;
         messagesInView = [];
         threadSelected = null;
+        render();
+    }
+
+
+    if (navigationPopup) {
+        document.body.removeEventListener('click', onClickWhenNavPopupOpen);
+        navigationPopup = false;
+        render();
+    }
+}
+
+function isParentOf(element: Element, parent: Element) {
+    while (element.parentElement) {
+        if (element.parentElement === parent) return true;
+        element = element.parentElement;
+    }
+    return false;
+}
+
+function onClickWhenNavPopupOpen(event: MouseEvent) {
+    let target = event.target as HTMLElement;
+    if (isParentOf(target, document.querySelector('.Main.navigation'))) {
+        return;
+    }
+    document.body.removeEventListener('click', onClickWhenNavPopupOpen);
+
+    navigationPopup = false;
+    render();
+}
+
+function onNavClickNav() {
+    // If these modes can naturally expand navigation panel,
+    // then expand them
+    if (widescreenModeActual === WideScreenMode.Tablet
+        || widescreenModeActual === WideScreenMode.WideScreen) {
+        widescreenMode = widescreenMode === widescreenModeActual ? widescreenModeActual + 1 : widescreenModeActual;
+    } else {
+        if (!navigationPopup) {
+            navigationPopup = true;
+            document.body.addEventListener('click', onClickWhenNavPopupOpen);
+        }
+    }
+    render();
+}
+
+function onNavClickNew() {
+    let message = new LocalMessage();
+    let content = new Content();
+
+    message.setContent(content);
+    messagesInView = [message];
+    render();
+}
+
+function onNavFoldClick(item: NavigationListItem) {
+    let handler = item['handler'];
+    if (handler) {
+        handler();
+    } else if (item === topNavigationFold[2]) {
+        navigationPopup = true;
+        document.body.addEventListener('click', onClickWhenNavPopupOpen);
         render();
     }
 }
@@ -120,10 +216,12 @@ function onSelectMessage(msg: Message) {
     // A click can either select or deselect a message
     if (threadSelected === msg) {
         threadSelected = null;
-        messagesInView = [];
     } else {
         threadSelected = msg;
     }
+
+    // Clear the view
+    messagesInView = [];
 
     if (threadSelected) {
         let onContentLoad = (contentFetched: Content) => {
@@ -134,9 +232,6 @@ function onSelectMessage(msg: Message) {
                 threadSelected.setUnread(false).then(() => render());
             }
         }
-
-        // Clear the view
-        messagesInView = [];
 
         if (threadSelected.getContentSync()) {
             onContentLoad(threadSelected.getContentSync());
@@ -222,6 +317,12 @@ function onClickSetFlagged(message: Message, flagged: boolean) {
 
 
 function render() {
+    // Navigation panel
+    let navigationPane = <Navigation className={`Main navigation${navigationPopup ? ' visible' : ''}`} list={navigationPanel} bottomList={bottomNavigationItems} selected={folderSelected} onSelect={onNavClick} />;
+
+    let navigationFold = <Navigation className="Main navigation-fold" list={topNavigationFold} bottomList={bottomNavigationFold} onSelect={onNavFoldClick} />;
+
+    // Message list
     let count = 0;
     if (folderSelected) {
         let folder = (folderSelected as any).folder as Folder;
@@ -232,20 +333,26 @@ function render() {
         ? <div id="list-placeholder">{folderSelected ? 'There are no messages in this folder.' : 'Select a folder to start.'}</div>
         : <LazyList length={count} context={folderSelected} itemHeight={80} load={loadMessage} fastload={fastLoadMessage} render={renderMessage} onSelect={onSelectMessage} />;
 
+    // Message view
     let messagePane = null;
     if (messagesInView.length) {
+        let backButton = widescreenMode < WideScreenMode.Tablet ? null :
+            <ToolbarButton icon="arrow-left" text="Back" onClick={() => onSelectMessage(null)} />
+
         let viewId = 0, editorId = 0;
-        let messageViews = messagesInView.map(msg => {
+        let messageViews = messagesInView.map((msg, i) => {
             let toolbar, view, key: string;
 
             if (msg instanceof LocalMessage) {
                 toolbar = <Toolbar>
+                    {i === 0 && backButton}
                     <ToolbarButton icon="paper-plane" text="Send" />
                     <ToolbarButton icon="paperclip" text="Attach" />
                     <ToolbarButton icon="trash-o" text="Discard" />
                 </Toolbar>
             } else {
                 toolbar = <Toolbar>
+                    {i === 0 && backButton}
                     <ToolbarButton icon="reply" text="Reply" onClick={() => onClickReply(msg)} />
                     <ToolbarButton icon="reply-all" text="Reply All" onClick={() => onClickReplyAll(msg)} />
                     <ToolbarButton icon="share" text="Forward" onClick={() => onClickForward(msg)} />
@@ -279,11 +386,23 @@ function render() {
         messagePane = <div id="message">{messageViews}</div>
     }
 
+    let wsClass;
+    switch (widescreenMode) {
+        case WideScreenMode.WideScreen: wsClass = 'display-widescreen'; break;
+        case WideScreenMode.Desktop: wsClass = 'display-desktop'; break;
+        case WideScreenMode.Tablet: wsClass = 'display-tablet'; break;
+        default: wsClass = 'display-mobile'; break;
+    }
+
+    let mainframe = <div className={`Main ${wsClass} frame${showSetting ? ' hidden' : ''}`}>
+        {navigationPane}
+        {navigationFold}
+        {lazyList}
+        {messagePane}
+    </div>;
     ReactDOM.render(
         <div className="toplevel">
-            <Navigation list={navigationPanel} bottomList={bottomNavigationItems} selected={selected} onSelect={onNavClick} />
-            {lazyList}
-            {messagePane}
+            {mainframe}
         </div>,
         document.getElementById("root")
     );
@@ -310,6 +429,33 @@ async function main() {
     render();
 }
 
+function onResize() {
+    let newWidescreenMode: WideScreenMode;
+    if (window.innerWidth < 560) {
+        newWidescreenMode = WideScreenMode.Mobile;
+    } else if (window.innerWidth < 1000) {
+        newWidescreenMode = WideScreenMode.Tablet;
+    } else if (window.innerWidth < 1200) {
+        newWidescreenMode = WideScreenMode.Desktop;
+    } else {
+        newWidescreenMode = WideScreenMode.WideScreen;
+    }
 
-render();
+    if (newWidescreenMode !== widescreenMode && newWidescreenMode !== widescreenModeActual) {
+        widescreenMode = newWidescreenMode;
+
+        // Clean up if window resizes when nav popup is open
+        document.body.removeEventListener('click', onClickWhenNavPopupOpen);
+        navigationPopup = false;
+
+        render();
+    }
+    widescreenModeActual = newWidescreenMode;
+}
+
+window.addEventListener('resize', event => {
+    onResize();
+});
+
+onResize();
 main();

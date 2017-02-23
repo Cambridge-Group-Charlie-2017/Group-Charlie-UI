@@ -24,21 +24,36 @@ body {
     overflow: hidden;
 }
 
-.Navigation.panel {
+.Main.navigation, .Settings.navigation {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 200px;
     cursor: default;
+    
+    background: rgba(0, 0, 0 ,0.6);
+}
+
+.Main.navigation-fold {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 50px;
+    cursor: default;
+    
+    background: rgba(0, 0, 0 ,0.6);
+}
+
+.Main.hidden {
+    visibility: hidden;
 }
 
 .LazyList.panel, #list-placeholder {
     position: absolute;
     top: 0;
-    left: 200px;
     height: 100%;
-    width: 360px;
     border-left: 1px solid #CCC;
     border-right: 1px solid #CCC;
     cursor: default;
@@ -47,10 +62,10 @@ body {
 #message {
     position: absolute;
     top: 0;
-    left: 560px;
     right: 0;
     height: 100%;
     overflow: auto;
+    background: white;
 }
 
 #list-placeholder {
@@ -72,4 +87,63 @@ body {
 
 .msgSection:not(:first-child) {
     border-top: 1px solid #CCC;
+}
+
+/* Do not use media query here since button may toggle between display modes */
+.display-widescreen .Main.navigation-fold {
+    display: none;
+}
+
+.display-widescreen .LazyList.panel, .display-widescreen #list-placeholder {
+    left: 200px;
+    width: 360px;
+}
+
+.display-widescreen #message {
+    left: 560px;
+}
+
+.display-desktop .Main.navigation {
+    display: none;
+}
+
+.display-desktop .LazyList.panel, .display-desktop #list-placeholder {
+    left: 50px;
+    width: 360px;
+}
+
+.display-desktop #message {
+    left: 410px;
+}
+
+.display-tablet .Main.navigation-fold {
+    display: none;
+}
+
+.display-tablet .LazyList.panel, .display-tablet #list-placeholder {
+    left: 200px;
+    right: 0;
+}
+
+.display-tablet #message {
+    left: 0;
+}
+
+.display-mobile .Main.navigation {
+    display: none;
+}
+
+.display-mobile .LazyList.panel, .display-mobile #list-placeholder {
+    left: 50px;
+    right: 0;
+}
+
+.display-mobile #message {
+    left: 0;
+}
+
+.Main.navigation.visible {
+    display: block;
+    z-index: 10;
+    background: rgb(16, 110, 190);
 }
