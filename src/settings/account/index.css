@@ -1,0 +1,43 @@
+.Input.wrapper {
+    border-bottom: 1px solid rgba(0,0,0,.15);
+    padding: .5em .75em;
+    font-size: 0.9em;
+    line-height: 1.25;
+    display: block;
+}
+
+.Input.label {
+    display: inline-block;
+    width: 80px;
+    color: #777;
+}
+
+.Input.input {
+    font-size: 1em;
+    line-height: 1.25;
+    color: #464a4c;
+    background: transparent;
+    border: 0;
+    display: inline-block;
+    width: calc(100% - 80px);
+}
+
+.Input.input:focus {
+    outline: 0;
+}
+
+.Fieldset {
+    padding: 0;
+    margin: 1em 0;
+    border: 0;
+}
+
+.Legend {
+    font-size: .9em;
+    padding: 0em .75em;
+    font-weight: bold;
+}
+
+.AccountSettings {
+    padding: 1em;
+}

@@ -18,9 +18,8 @@ html {
 }
 
 body {
-    background: url(https://upload.wikimedia.org/wikipedia/commons/a/a1/University_of_Cambridge_Computer_Laboratory.jpg);
+    background: url(http://localhost:6245/resources/background);
     background-size: cover;
-    background-position: center;
     overflow: hidden;
 }
 
@@ -146,4 +145,14 @@ body {
     display: block;
     z-index: 10;
     background: rgb(16, 110, 190);
+}
+
+.Settings.mainframe {
+    position: absolute;
+    top: 0;
+    left: 200px;
+    right: 0;
+    bottom: 0;
+
+    background: white;
 }

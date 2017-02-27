@@ -18,6 +18,8 @@ import { EmailEditor } from './components/email-editor';
 import { ToolbarButton, Toolbar } from './components/toolbar';
 
 import { Store, Folder, LocalMessage, RemoteMessage, Message, Content } from './services/api';
+import { Settings } from './settings';
+
 import { Sanitizer } from './services/sanitize';
 import { linkify } from './services/linkify';
 
@@ -400,9 +402,14 @@ function render() {
         {lazyList}
         {messagePane}
     </div>;
+
     ReactDOM.render(
         <div className="toplevel">
             {mainframe}
+            {showSetting && <Settings onBack={() => {
+                showSetting = false;
+                render();
+            }} />}
         </div>,
         document.getElementById("root")
     );
