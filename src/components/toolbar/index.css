@@ -1,4 +1,4 @@
-.Toolbar.Button.button {
+.ToolbarButton.button {
     padding: .5em .8em .5em .5em;
     background: white;
     border: 0;
@@ -6,19 +6,19 @@
     line-height: 1.5;
 }
 
-.Toolbar.Button.icon {
+.ToolbarButton.icon {
     width: 24px;
 }
 
-.Toolbar.Button.button:hover {
+.ToolbarButton.button:hover {
     background: rgb(204, 227, 245);
 }
 
-.Toolbar.Button.button:focus {
+.ToolbarButton.button:focus {
     outline: none;
 }
 
-.Toolbar.Button.button:active {
+.ToolbarButton.button:active {
     background: rgb(179,214,242);
     outline: none;
 }

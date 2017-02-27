@@ -4,6 +4,8 @@
     font-size: 0.9em;
     line-height: 1.25;
     display: block;
+
+    transition: all .2s linear;
 }
 
 .Input.label {
@@ -26,6 +28,14 @@
     outline: 0;
 }
 
+.Input.wrapper.focus {
+    border-bottom: 1px solid rgb(16, 110, 190);
+}
+
+.Input.focus .Input.label {
+    color: rgb(16, 110, 190);
+}
+
 .Fieldset {
     padding: 0;
     margin: 1em 0;
@@ -40,4 +50,27 @@
 
 .AccountSettings {
     padding: 1em;
+}
+
+.Button {
+    padding: .25em .75em;
+    color: white;
+    background: rgb(16, 110, 190);
+    border: 0;
+    line-height: 1.5;
+
+    transition: all .2s linear;
+}
+
+.Button:hover {
+    background: rgb(13, 85, 124);
+}
+
+.Button:active {
+    background: rgb(16, 110, 190);
+}
+
+.Button:disabled {
+    background: #EEE;
+    color: #777;
 }

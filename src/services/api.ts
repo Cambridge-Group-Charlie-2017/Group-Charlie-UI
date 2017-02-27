@@ -12,7 +12,7 @@ function propCheck(shape: string[], data: any) {
     return true;
 }
 
-function query(method: string, endpoint: string, params: URLSearchParams) {
+function query(method: string, endpoint: string, params: URLSearchParams, data?: any) {
     return new Promise<any>((resolve, reject) => {
         let url = `${BASE}/${endpoint}`;
         if (params) {
@@ -35,12 +35,20 @@ function query(method: string, endpoint: string, params: URLSearchParams) {
             reject(error);
         };
 
-        request.send();
+        request.send(data && JSON.stringify(data));
     });
 }
 
 export function get(endpoint: string, params: URLSearchParams = null) {
     return query('GET', endpoint, params);
+}
+
+export function post(endpoint: string, params: URLSearchParams = null, data?: any) {
+    return query('POST', endpoint, params, data);
+}
+
+export function put(endpoint: string, params: URLSearchParams = null, data?: any) {
+    return query('PUT', endpoint, params, data);
 }
 
 export function patch(endpoint: string, params: URLSearchParams = null) {
@@ -263,6 +271,13 @@ export class Contact {
     toString() {
         if (this.name) return `${this.name} <${this.address}>`;
         return this.address;
+    }
+
+    serialize() {
+        return {
+            name: this.name,
+            address: this.address
+        };
     }
 
     static deserialize(json: any) {

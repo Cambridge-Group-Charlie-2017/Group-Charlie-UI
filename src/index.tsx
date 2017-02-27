@@ -18,6 +18,7 @@ import { EmailEditor } from './components/email-editor';
 import { ToolbarButton, Toolbar } from './components/toolbar';
 
 import { Store, Folder, LocalMessage, RemoteMessage, Message, Content } from './services/api';
+import * as api from './services/api';
 import { Settings } from './settings';
 
 import { Sanitizer } from './services/sanitize';
@@ -317,6 +318,31 @@ function onClickSetFlagged(message: Message, flagged: boolean) {
     }
 }
 
+function onClickSend(message: LocalMessage) {
+    api.post('send', undefined, {
+        to: message.to.map(t => t.serialize()),
+        cc: message.cc.map(t => t.serialize()),
+        bcc: message.bcc.map(t => t.serialize()),
+        subject: message.subject,
+        content: message.getContentSync().content,
+        inReplyTo: message.inReplyTo
+    }).then(() => {
+        let id = messagesInView.indexOf(message);
+        if (id !== -1) {
+            messagesInView.splice(id, 1);
+            render();
+        }
+    });
+}
+
+function onClickDiscard(message: LocalMessage) {
+    let id = messagesInView.indexOf(message);
+    if (id !== -1) {
+        messagesInView.splice(id, 1);
+        render();
+    }
+}
+
 
 function render() {
     // Navigation panel
@@ -348,9 +374,9 @@ function render() {
             if (msg instanceof LocalMessage) {
                 toolbar = <Toolbar>
                     {i === 0 && backButton}
-                    <ToolbarButton icon="paper-plane" text="Send" />
+                    <ToolbarButton icon="paper-plane" text="Send" onClick={() => onClickSend(msg)} />
                     <ToolbarButton icon="paperclip" text="Attach" />
-                    <ToolbarButton icon="trash-o" text="Discard" />
+                    <ToolbarButton icon="trash-o" text="Discard" onClick={() => onClickDiscard(msg)} />
                 </Toolbar>
             } else {
                 toolbar = <Toolbar>
@@ -408,7 +434,7 @@ function render() {
             {mainframe}
             {showSetting && <Settings onBack={() => {
                 showSetting = false;
-                render();
+                main();
             }} />}
         </div>,
         document.getElementById("root")
@@ -427,13 +453,28 @@ function folderToListItem(f: Folder) {
     return ret;
 }
 
-async function main() {
+async function reloadData() {
     let store = new Store();
 
     let f: Folder[] = await store.getFolders();
 
     navigationPanel[2].children = f.map(folderToListItem);
     render();
+}
+
+async function main() {
+    let status = await api.get('status');
+
+    if (status === 'INIT') {
+        // The software is not ready to use
+        // prompt user for account information
+        showSetting = true;
+
+        render();
+        return;
+    }
+
+    await reloadData();
 }
 
 function onResize() {

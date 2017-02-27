@@ -3,7 +3,7 @@ import * as moment from 'moment';
 
 import { Icon } from '../icon';
 
-import { Message, Content } from '../../services/api';
+import { Message, Content, Contact } from '../../services/api';
 import { linkify } from '../../services/linkify';
 import { Sanitizer } from '../../services/sanitize';
 import { RichEditor } from '../richeditor';
@@ -71,6 +71,29 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
 
     }
 
+    private parseAddress(name: string) {
+        return name.split(';').filter(item => item.trim()).map(item => {
+            let contact = new Contact();
+            let match = /([^<>]*)<([^<>]*)>/.exec(item);
+            if (!match) {
+                contact.name = '';
+                contact.address = item;
+            } else {
+                contact.name = match[1];
+                contact.address = match[2];
+            }
+            return contact;
+        });
+    }
+
+    private updateMessage() {
+        this.props.item.to = this.parseAddress(this.state.to);
+        this.props.item.cc = this.parseAddress(this.state.cc);
+        this.props.item.bcc = this.parseAddress(this.state.bcc);
+        this.props.item.subject = this.state.subject;
+        this.props.item.setContent(this.state.content);
+    }
+
     private handleChange(editor: RichEditor) {
         this.state.content.content = editor.getContent();
         this.setState({
@@ -92,6 +115,8 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
     }
 
     render() {
+        this.updateMessage();
+
         let attachments = null;
         if (this.state.content) {
             attachments = <div className="EmailEditor attContainer">{

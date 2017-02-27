@@ -11,8 +11,8 @@ interface ToolbarButtonProps {
 
 export class ToolbarButton extends React.Component<ToolbarButtonProps, {}> {
     render() {
-        return <button onClick={this.props.onClick} className="Toolbar Button button">
-            <Icon name={this.props.icon} className="Toolbar Button icon" />
+        return <button onClick={this.props.onClick} className="ToolbarButton button">
+            <Icon name={this.props.icon} className="ToolbarButton icon" />
             {this.props.text}
         </button>
     }
