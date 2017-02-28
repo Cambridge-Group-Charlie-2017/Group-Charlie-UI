@@ -49,7 +49,7 @@ class InputBox extends React.Component<InputBoxProps, InputBoxState> {
     }
 
     render() {
-        let props = Object.assign({}, this.props);
+        let props = Object.assign({}, this.props) as InputBoxProps;
         delete props['label'];
 
         return <label className={`Input wrapper${this.state.focus ? ' focus' : ''}`}>

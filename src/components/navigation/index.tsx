@@ -139,7 +139,7 @@ export class Navigation extends React.Component<NavigationProps, NavigationState
         }
         return <div className={this.props.className}>
             <div className="Navigation panel">
-                <div>{items}</div>
+                <div className="Navigation top" style={{bottom: bottomItems.length * 2.5 + 'em'}}>{items}</div>
                 {bottomItems.length ? <div className="Navigation bottom">{bottomItems}</div> : null}
             </div>
         </div>;

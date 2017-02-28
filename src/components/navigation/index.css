@@ -1,8 +1,6 @@
 .Navigation.panel {
     height: 100%;
     padding: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
 
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -46,6 +44,14 @@
 
 .Navigation.selected {
     background: rgb(2, 99, 179);
+}
+
+.Navigation.top {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .Navigation.bottom {
