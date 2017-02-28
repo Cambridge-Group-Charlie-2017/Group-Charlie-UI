@@ -9,7 +9,6 @@ export interface NavigationListItem {
     children?: NavigationListItem[];
     collapsible?: boolean;
     noindent?: boolean;
-    [others: string]: any;
 }
 
 interface NavigationProps {

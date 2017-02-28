@@ -154,6 +154,7 @@ export abstract class Message {
     cc: Contact[] = [];
     bcc: Contact[] = [];
     inReplyTo: string = "";
+    mid: string = "";
 
     subject: string = "";
     date: Date = null;
@@ -248,6 +249,7 @@ export class RemoteMessage extends Message {
         msg.cc = json.cc.map(Contact.deserialize);
         msg.bcc = json.bcc.map(Contact.deserialize);
         msg.inReplyTo = json.inReplyTo;
+        msg.mid = json.mid;
         msg.subject = json.subject;
         msg.date = new Date(json.date);
         msg.summary = json.summary;

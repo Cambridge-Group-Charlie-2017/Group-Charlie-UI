@@ -47,7 +47,12 @@ function sanitize(message: RemoteMessage, content: Content) {
     }
 }
 
-let navigationPanel: NavigationListItem[] = [{
+interface NavItem extends NavigationListItem {
+    handler?: () => void;
+    folder?: Folder;
+};
+
+let navigationPanel: NavItem[] = [{
     text: '',
     icon: 'bars',
     handler: onNavClickNav
@@ -68,7 +73,7 @@ let bottomNavigationItems: NavigationListItem[] = [{
     icon: 'cog'
 }];
 
-let topNavigationFold: NavigationListItem[] = [{
+let topNavigationFold: NavItem[] = [{
     text: '',
     icon: 'bars',
     handler: onNavClickNav
@@ -88,7 +93,7 @@ let bottomNavigationFold: NavigationListItem[] = [{
 
 let messagesInView: Message[] = [];
 
-let folderSelected: NavigationListItem = null;
+let folderSelected: NavItem = null;
 let threadSelected: Message = null;
 
 enum WideScreenMode {
@@ -103,8 +108,8 @@ let navigationPopup = false;
 let showSetting = false;
 
 /* Navigation Control */
-function onNavClick(item: NavigationListItem) {
-    let handler = item['handler'];
+function onNavClick(item: NavItem) {
+    let handler = item.handler;
     if (handler) {
         handler();
     }
@@ -172,8 +177,8 @@ function onNavClickNew() {
     render();
 }
 
-function onNavFoldClick(item: NavigationListItem) {
-    let handler = item['handler'];
+function onNavFoldClick(item: NavItem) {
+    let handler = item.handler;
     if (handler) {
         handler();
     } else if (item === topNavigationFold[2]) {
@@ -273,7 +278,9 @@ function createReplyDraft(message: Message) {
 
     content.content = `<p></p><hr>${quoteMessage(message as RemoteMessage, contentFetched)}`;
 
+    replyMessage.inReplyTo = message.mid;
     replyMessage.setContent(content);
+
     messagesInView.unshift(replyMessage);
     return replyMessage;
 }
@@ -442,7 +449,7 @@ function render() {
 }
 
 function folderToListItem(f: Folder) {
-    let ret: NavigationListItem = {
+    let ret: NavItem = {
         text: <span>{f.name}{f.unread > 0 ? <span style={{ float: 'right' }}>{f.unread}</span> : null}</span>,
         folder: f
     };
@@ -459,6 +466,15 @@ async function reloadData() {
     let f: Folder[] = await store.getFolders();
 
     navigationPanel[2].children = f.map(folderToListItem);
+
+    // Re-set folder selected
+    if (folderSelected)
+        folderSelected = navigationPanel[2].children.find(
+            v => (v as NavItem).folder.name === folderSelected.folder.name);
+
+    threadSelected = null;
+    messagesInView = [];
+
     render();
 }
 

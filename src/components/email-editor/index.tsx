@@ -41,6 +41,8 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
             bcc: '',
             subject: ''
         };
+
+        this.componentWillReceiveProps(props);
     }
 
     componentDidMount() {
@@ -98,25 +100,23 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
         this.state.content.content = editor.getContent();
         this.setState({
             content: this.state.content
-        });
+        }, () => this.updateMessage());
     }
 
     private handleSubjectChange(event: React.ChangeEvent<HTMLInputElement>) {
         this.setState({
             subject: event.target.value
-        });
+        }, () => this.updateMessage());
     }
 
     private handleRecvChange(event: React.ChangeEvent<HTMLInputElement>, field: "to" | "cc" | "bcc") {
         // Workaround TypeScript's incapability to use string literal type in computed properties 
         let newState: Pick<EmailEditorState, "to" | "cc" | "bcc"> = {} as any;
         newState[field] = event.target.value;
-        this.setState(newState);
+        this.setState(newState, () => this.updateMessage());
     }
 
     render() {
-        this.updateMessage();
-
         let attachments = null;
         if (this.state.content) {
             attachments = <div className="EmailEditor attContainer">{
