@@ -342,6 +342,20 @@ function onClickSend(message: LocalMessage) {
     });
 }
 
+function onClickAttach(message: LocalMessage) {
+    let content = message.getContentSync().content;
+    // Process to text
+    let textContent = new DOMParser().parseFromString(content, 'text/html').body.textContent;
+    api.post('suggestion', undefined, { data: textContent }).then(file => {
+        let param = new URLSearchParams();
+        param.append('title', 'Select Attachment');
+        param.append('file', file);
+        api.get('native/select_file', param).then(file => {
+            alert(file);
+        });
+    });
+}
+
 function onClickDiscard(message: LocalMessage) {
     let id = messagesInView.indexOf(message);
     if (id !== -1) {
@@ -382,7 +396,7 @@ function render() {
                 toolbar = <Toolbar>
                     {i === 0 && backButton}
                     <ToolbarButton icon="paper-plane" text="Send" onClick={() => onClickSend(msg)} />
-                    <ToolbarButton icon="paperclip" text="Attach" />
+                    <ToolbarButton icon="paperclip" text="Attach" onClick={() => onClickAttach(msg)} />
                     <ToolbarButton icon="trash-o" text="Discard" onClick={() => onClickDiscard(msg)} />
                 </Toolbar>
             } else {
