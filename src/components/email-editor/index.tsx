@@ -34,15 +34,7 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
         content.attachment = [];
         content.content = '';
 
-        this.state = {
-            content: content,
-            to: '',
-            cc: '',
-            bcc: '',
-            subject: ''
-        };
-
-        this.componentWillReceiveProps(props);
+        this.state = this.getStateByProps(props, content);
     }
 
     componentDidMount() {
@@ -54,19 +46,22 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
         this.mounted = false;
     }
 
-    componentWillReceiveProps(props: EmailEditorProps) {
-        let content = this.state.content;
+    getStateByProps(props: EmailEditorProps, content: Content): EmailEditorState {
         content.type = props.content.type;
         content.content = props.content.content;
         content.attachment = props.content.attachment;
 
-        this.setState({
+        return {
             to: props.item.to.join('; '),
             cc: props.item.cc.join('; '),
             bcc: props.item.bcc.join('; '),
             subject: props.item.subject,
             content: content,
-        });
+        };
+    }
+
+    componentWillReceiveProps(props: EmailEditorProps) {
+        this.setState(this.getStateByProps(props, this.state.content));
     }
 
     private removeAttachment(name: string) {
