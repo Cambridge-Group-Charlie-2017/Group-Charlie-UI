@@ -25,7 +25,7 @@
     "normalize.css": "^5.0.0",
     "source-map-loader": "^0.1.6",
     "style-loader": "^0.13.1",
-    "typescript": "^2.1.6",
+    "typescript": "^2.2.1",
     "webpack": "^2.2.0",
     "webpack-dev-server": "^2.3.0"
   }
