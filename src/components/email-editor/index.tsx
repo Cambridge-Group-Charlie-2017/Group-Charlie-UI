@@ -70,7 +70,12 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
     }
 
     private removeAttachment(name: string) {
+        let id = this.state.content.attachment.indexOf(name);
+        this.state.content.attachment.splice(id, 1);
 
+        this.setState({
+            content: this.state.content
+        }, () => this.updateMessage());
     }
 
     private parseAddress(name: string) {
@@ -120,7 +125,11 @@ export class EmailEditor extends React.Component<EmailEditorProps, EmailEditorSt
         let attachments = null;
         if (this.state.content) {
             attachments = <div className="EmailEditor attContainer">{
-                this.state.content.attachment.map(name => <div className="EmailEditor attachment" key={name}><span className="EmailEditor attName" title={name}><Icon name="file-o" className="EmailEditor attIcon" />{name}</span><Icon name="times" className="EmailEditor attRemove" onClick={() => this.removeAttachment(name)} /></div>)}
+                this.state.content.attachment.map(name => {
+                    let paths = name.split(/[/\\]/);
+                    let filename = paths[paths.length - 1];
+                    return <div className="EmailEditor attachment" key={name}><span className="EmailEditor attName" title={name}><Icon name="file-o" className="EmailEditor attIcon" />{filename}</span><Icon name="times" className="EmailEditor attRemove" onClick={() => this.removeAttachment(name)} /></div>
+                })}
             </div>;
         }
 

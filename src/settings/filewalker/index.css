@@ -1,0 +1,48 @@
+.FileWalker.entry::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.FileWalker.entry {
+    border-bottom: 1px solid rgba(0,0,0,.15);
+}
+
+.FileWalker.entry .remove {
+    padding: .5em 0;
+    display: block;
+    float: right;
+    width: 20px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.FileWalker.entry .remove:hover {
+    background: #D2D2D2;
+}
+
+.FileWalker.entry .text {
+    float: left;
+    padding: .5em .75em;
+}
+
+.FileWalker.new {
+    padding: .5em .75em;
+}
+
+.FileWalker.new:hover {
+    background: #D2D2D2;
+}
+
+.FileWalker.new .fa-plus {
+    font-size: .9em;
+    padding-right: .5em;
+}
+
+.FileWalkerSettings .Button {
+    margin-top: .5em;
+}
+
+.FileWalkerSettings {
+    padding: 1em;
+}

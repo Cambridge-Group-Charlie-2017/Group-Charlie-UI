@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { Navigation, NavigationListItem } from './components/navigation';
 import { AccountSettings } from './settings/account';
+import { FileWalkerSettings } from './settings/filewalker';
 
 interface SettingsProps {
     onBack: () => void;
@@ -21,6 +22,9 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     }, {
         text: 'Account',
         icon: 'user-circle-o'
+    }, {
+        text: 'Document Scanner',
+        icon: 'file-text-o'
     }, {
         text: 'System Status',
         icon: 'desktop',
@@ -53,9 +57,18 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
     }
 
     render() {
+        let mainframe;
+        switch (this.state.selectedNav.text) {
+            case 'Account':
+                mainframe = <AccountSettings className="Settings mainframe" />;
+                break;
+            case 'Document Scanner':
+                mainframe = <FileWalkerSettings className="Settings mainframe" />;
+                break;
+        }
         return <div id="Settings">
-            <Navigation className="Settings navigation" list={this.navigation} onSelect={e=>this.onNavigation(e)} selected={this.state.selectedNav} />
-            <AccountSettings className="Settings mainframe" />
+            <Navigation className="Settings navigation" list={this.navigation} onSelect={e => this.onNavigation(e)} selected={this.state.selectedNav} />
+            {mainframe}
         </div>;
     }
 }

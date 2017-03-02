@@ -332,6 +332,7 @@ function onClickSend(message: LocalMessage) {
         bcc: message.bcc.map(t => t.serialize()),
         subject: message.subject,
         content: message.getContentSync().content,
+        attachment: message.getContentSync().attachment,
         inReplyTo: message.inReplyTo
     }).then(() => {
         let id = messagesInView.indexOf(message);
@@ -349,9 +350,11 @@ function onClickAttach(message: LocalMessage) {
     api.post('suggestion', undefined, { data: textContent }).then(file => {
         let param = new URLSearchParams();
         param.append('title', 'Select Attachment');
-        param.append('file', file);
+        if (file) param.append('file', file);
         api.get('native/select_file', param).then(file => {
-            alert(file);
+            if (!file) return;
+            message.getContentSync().attachment.push(file);
+            render();
         });
     });
 }
