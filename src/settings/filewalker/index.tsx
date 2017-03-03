@@ -25,7 +25,8 @@ export class FileWalkerSettings extends React.Component<FileWalkerProps, FileWal
     }
 
     private async loadData() {
-        let folders = JSON.parse(await api.get('settings/config/filewalker.root')) as string[];
+        let json = await api.get('settings/config/filewalker.root');
+        let folders = json === null ? [] : JSON.parse(json) as string[];
 
         this.setState({
             folders: folders,
