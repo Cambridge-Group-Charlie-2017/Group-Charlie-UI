@@ -2,7 +2,7 @@
 
 ## Auto Archive v1.0
 
-The UI module contains all the components necessary for interfacing with the Group-Charlie module and providing an interface to the user in their default browser.
+The UI module contains all the components necessary for interfacing with the [Group-Charlie](https://github.com/nbdd0121/Group-Charlie) module and providing an interface to the user in their default browser.
 This will be hosted locally on the user's machine (as opposed to on a server), and as such requires the user to perform some additional setup steps outlined below.
 
 The following is a list of the main features provided to the user by the UI:
