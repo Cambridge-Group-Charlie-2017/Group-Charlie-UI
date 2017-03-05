@@ -1,7 +1,8 @@
 import * as React from 'react';
 import './index.css';
 
-import { Message, RemoteMessage, get } from '../../services/api';
+import { Icon } from '../../components/icon';
+import * as api from '../../services/api';
 
 interface DataPointProps {
     color: string;
@@ -33,19 +34,37 @@ interface ClustererProps {
 }
 
 interface ClustererState {
-    move: boolean;
-    focus: [number, number];
     data: Data[];
     scale: number;
     legend: { [name: string]: number };
     highlightCluster: string;
+    reclustering: boolean;
+}
+
+function shuffle<T>(array: T[]) {
+    for (let i = array.length; i; i--) {
+        let j = Math.floor(Math.random() * i);
+        [array[i - 1], array[j]] = [array[j], array[i - 1]];
+    }
 }
 
 export class ClustererStatus extends React.Component<ClustererProps, ClustererState> {
     constructor(props: ClustererProps) {
         super(props);
 
-        get('status/clusterer').then(json => {
+        this.loadData();
+
+        this.state = {
+            data: null,
+            legend: null,
+            scale: 1,
+            highlightCluster: null,
+            reclustering: false
+        };
+    }
+
+    private loadData() {
+        api.get('status/clusterer').then(json => {
             let array = json as Data[];
             let map: { [name: string]: number } = {};
             let id = 0;
@@ -56,19 +75,13 @@ export class ClustererStatus extends React.Component<ClustererProps, ClustererSt
                 }
             });
 
+            // Without shuffling, one cluster's dot will always be on top of another
+            shuffle(array);
+
             let scale = this.calcScale(array);
 
             this.setState({ data: array, legend: map, scale: scale });
         });
-
-        this.state = {
-            move: false,
-            focus: null,
-            data: null,
-            legend: null,
-            scale: 1,
-            highlightCluster: null
-        };
     }
 
     private calcScale(data: Data[]) {
@@ -80,42 +93,47 @@ export class ClustererStatus extends React.Component<ClustererProps, ClustererSt
         return 0.5 / max;
     }
 
-    handleMove(e: React.MouseEvent<HTMLDivElement>) {
-        if (!this.state.move) return;
-        let bound = e.currentTarget.getBoundingClientRect();
-        let x = (e.clientX - bound.left) / bound.width;
-        let y = (bound.bottom - e.clientY) / bound.height;
-        this.setState({
-            focus: [
-                Math.max(Math.min(x, 1), 0),
-                Math.max(Math.min(y, 1), 0)
-            ]
-        });
+    private getColor(cluster: string) {
+        return [
+            'red',
+            'yellow',
+            'blue',
+            'green',
+            'orange',
+            'purple',
+            'aqua',
+            'pink',
+            'maroon',
+            'navy',
+            'fuchsia',
+            'olive',
+            'teal',
+            'lime',
+            'chocolate',
+            'gold',
+            'violet'
+        ][this.state.legend[cluster]] || 'black';
     }
 
-    onClick(e: React.MouseEvent<HTMLDivElement>) {
-        // Temporary disable unfinished feature
-        if (1 === 1) return;
-        this.setState({
-            move: !this.state.move
-        });
-        this.handleMove(e);
-    }
-
-    onMove(e: React.MouseEvent<HTMLDivElement>) {
-        if (!this.state.move) return;
-        this.handleMove(e);
-    }
-
-    getColor(cluster: string) {
-        // TODO: need more color
-        return ['red', 'yellow', 'blue', 'green', 'orange', 'purple', 'cyan', 'pink'][this.state.legend[cluster] % 8];
-    }
-
-    toggleCluster(item: string) {
+    private toggleCluster(item: string) {
         this.setState({
             highlightCluster: item == this.state.highlightCluster ? null : item
         });
+    }
+
+    private recluster() {
+        let confirmation = confirm('Do you really want to recluster all messages? The operation is slow and it will move your messages.');
+        if (confirmation) {
+            this.setState({
+                reclustering: true
+            });
+            api.post('settings/recluster').then(() => {
+                this.setState({
+                    reclustering: false
+                });
+                this.loadData();
+            });
+        }
     }
 
     render() {
@@ -143,14 +161,18 @@ export class ClustererStatus extends React.Component<ClustererProps, ClustererSt
             );
         }
 
+        let button;
+        if (this.state.reclustering) {
+            button = <button className="Button Clusterer recluster" disabled={true}>
+                <Icon name="spinner" className="fa-spin" /> Reclustering
+            </button>
+        } else {
+            button = <button className="Button Clusterer recluster" onClick={() => this.recluster()}>Recluster</button>
+        }
+
         return <div className={this.props.className}>
-            <div className="Clusterer graph" onMouseDown={e => this.onClick(e)} onMouseMove={e => this.onMove(e)}>
-                <div className="Clusterer interactiveWrapper">
-                    {this.state.focus !== null && <div className="Clusterer focus" style={{
-                        left: this.state.focus[0] * 100 + '%',
-                        bottom: this.state.focus[1] * 100 + '%'
-                    }} />}
-                </div>
+            {button}
+            <div className="Clusterer graph">
                 {datapoints}
             </div>
             {legendToggles}
