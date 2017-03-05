@@ -185,6 +185,10 @@ function onNavFoldClick(item: NavItem) {
         navigationPopup = true;
         document.body.addEventListener('click', onClickWhenNavPopupOpen);
         render();
+    } else if (item === bottomNavigationFold[0]) {
+        showSetting = true;
+        render();
+        return;
     }
 }
 
