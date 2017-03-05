@@ -408,7 +408,7 @@ function render() {
                     <ToolbarButton icon="reply" text="Reply" onClick={() => onClickReply(msg)} />
                     <ToolbarButton icon="reply-all" text="Reply All" onClick={() => onClickReplyAll(msg)} />
                     <ToolbarButton icon="share" text="Forward" onClick={() => onClickForward(msg)} />
-                    <ToolbarButton icon="trash-o" text="Delete" />
+                    {/* <ToolbarButton icon="trash-o" text="Delete" /> */}
                     {
                         msg.flagged
                             ? <ToolbarButton icon="flag" text="Unflag" onClick={() => onClickSetFlagged(msg, false)} />
@@ -419,7 +419,7 @@ function render() {
                             ? <ToolbarButton icon="envelope-open-o" text="Mark As Read" onClick={() => onClickSetUnread(msg, false)} />
                             : <ToolbarButton icon="envelope-o" text="Mark As Unread" onClick={() => onClickSetUnread(msg, true)} />
                     }
-                    <ToolbarButton icon="folder-o" text="Move" />
+                    {/* <ToolbarButton icon="folder-o" text="Move" /> */}
                 </Toolbar>;
             }
 
