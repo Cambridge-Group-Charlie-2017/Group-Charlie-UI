@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Navigation, NavigationListItem } from './components/navigation';
 import { AccountSettings } from './settings/account';
 import { FileWalkerSettings } from './settings/filewalker';
+import { ClustererStatus } from './settings/clusterer';
 
 interface SettingsProps {
     onBack: () => void;
@@ -64,6 +65,9 @@ export class Settings extends React.Component<SettingsProps, SettingsState> {
                 break;
             case 'Document Scanner':
                 mainframe = <FileWalkerSettings className="Settings mainframe" />;
+                break;
+            case 'Clusterer':
+                mainframe = <ClustererStatus className="Settings mainframe" />;
                 break;
         }
         return <div id="Settings">
