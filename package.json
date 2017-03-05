@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --hot --inline --open --port 125",
+    "start": "webpack-dev-server --hot --inline --open --port 8080",
     "build": "webpack"
   },
   "author": "",
