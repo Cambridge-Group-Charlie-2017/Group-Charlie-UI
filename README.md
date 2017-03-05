@@ -16,7 +16,7 @@ The following is a list of the main features provided to the user by the UI:
 Instructions after cloning:
 
 1. Download and install npm (bundled with node): https://nodejs.org/en/download/
-2. Navigate to the Group-Charlie-UI module (using command prompt / shell) and run 'npm install'
+2. Navigate to the Group-Charlie-UI module (using command prompt / shell) and run `npm install`
 3. Execute command `patch -p1 < tinymce.patch`. This fixes a minor bug in TinyMCE. Ignore this step if the patch cannot be applied, which might indicate that the bug is fixed upstream.
 
 Intruction for running:
